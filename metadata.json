@@ -1,0 +1,6 @@
+{
+  "name": "The Nabaa Tankers",
+  "description": "A connected digital water tanker delivery and fleet management platform connecting customers, drivers, and operations across Saudi Arabia and the GCC.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
