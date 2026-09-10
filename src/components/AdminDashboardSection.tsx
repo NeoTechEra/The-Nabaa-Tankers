@@ -20,13 +20,15 @@ import {
   RefreshCw,
   Clock,
   Check,
-  Building
+  Building,
+  Mail
 } from 'lucide-react';
 import { SAMPLE_ADMIN_STATS, SAMPLE_ADMIN_ORDERS, TANKER_MODELS } from '../data/mockData';
 import { GmailIntegrationBadge } from './GmailIntegrationBadge';
+import { GmailInboxViewer } from './GmailInboxViewer';
 
 export const AdminDashboardSection: React.FC = () => {
-  const [activeAdminTab, setActiveAdminTab] = useState<'orders' | 'drivers' | 'tankers' | 'promotions' | 'commission' | 'analytics'>('orders');
+  const [activeAdminTab, setActiveAdminTab] = useState<'orders' | 'drivers' | 'tankers' | 'promotions' | 'commission' | 'analytics' | 'gmail_inbox'>('orders');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [orderFilter, setOrderFilter] = useState<'all' | 'Immediate' | 'Scheduled'>('all');
   const [commissionType, setCommissionType] = useState<'fixed' | 'percentage'>('fixed');
@@ -146,6 +148,7 @@ export const AdminDashboardSection: React.FC = () => {
           <div className="px-6 py-3 border-b border-slate-800 bg-[#081326] flex flex-wrap gap-2">
             {[
               { id: 'orders', label: '17. Live Order Center', icon: Activity },
+              { id: 'gmail_inbox', label: '📧 Gmail Dispatch Hub (thenabaatankers@gmail.com)', icon: Mail },
               { id: 'drivers', label: '18. Driver Management', icon: Users },
               { id: 'tankers', label: '19. Tanker Fleet', icon: Truck },
               { id: 'promotions', label: '20-21. Promotions & Codes', icon: Tag },
@@ -234,6 +237,10 @@ export const AdminDashboardSection: React.FC = () => {
                         <td className="p-3.5 font-mono font-bold text-cyan-300">{order.id}</td>
                         <td className="p-3.5">
                           <div className="font-bold text-white">{order.customerName}</div>
+                          <div className="text-[11px] text-cyan-300 font-mono flex items-center gap-1">
+                            <Mail className="w-3 h-3 text-cyan-400" />
+                            <span>{order.customerName.toLowerCase().replace(/[^a-z0-9]/g, '.') + '@gmail.com'}</span>
+                          </div>
                           <div className="text-[11px] text-slate-400 truncate max-w-xs">{order.address}</div>
                         </td>
                         <td className="p-3.5 font-mono text-slate-200">{order.tankerType}</td>
@@ -537,6 +544,13 @@ export const AdminDashboardSection: React.FC = () => {
                 </div>
 
               </div>
+            </div>
+          )}
+
+          {/* TAB: Gmail Dispatch Hub */}
+          {activeAdminTab === 'gmail_inbox' && (
+            <div className="p-6 animate-in fade-in duration-200">
+              <GmailInboxViewer />
             </div>
           )}
 

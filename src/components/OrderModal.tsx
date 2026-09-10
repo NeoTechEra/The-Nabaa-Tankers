@@ -17,6 +17,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
   const [hoseRequirement, setHoseRequirement] = useState('40m Standard Hose');
   const [step, setStep] = useState<'details' | 'dispatching' | 'confirmed'>('details');
   const [gmailNotified, setGmailNotified] = useState<boolean>(false);
+  const [composeUrl, setComposeUrl] = useState<string>('');
 
   const phoneDisplay = '+966 53 043 4010';
   const phoneTel = '+966530434010';
@@ -31,7 +32,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
     setStep('dispatching');
 
     try {
-      await notifyNabaaBooking({
+      const res = await notifyNabaaBooking({
         bookingType: 'tanker_order',
         tankerSize: currentTanker.name,
         capacity: `${currentTanker.capacityTons} Tons (${currentTanker.capacityLiters.toLocaleString()} L)`,
@@ -41,6 +42,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
         senderPhone: phone,
         notes: `Order Mode: ${deliveryMode === 'immediate' ? 'Immediate Express (18 min)' : 'Scheduled Delivery'}`
       });
+      setComposeUrl(res.composeUrl);
       setGmailNotified(true);
     } catch (e) {
       console.error('Failed to notify Gmail of tanker order:', e);
@@ -277,6 +279,18 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              {composeUrl && (
+                <a
+                  href={composeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2"
+                >
+                  <Mail className="w-4 h-4 text-cyan-400" />
+                  <span>Open in Gmail ({TARGET_GMAIL})</span>
+                </a>
+              )}
+
               <a
                 href={`tel:${phoneTel}`}
                 className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2"
