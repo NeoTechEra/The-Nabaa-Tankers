@@ -9,20 +9,36 @@ import {
 } from 'firebase/auth';
 import firebaseConfig from '../../firebase-applet-config.json';
 
-// Initialize Firebase App
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-export const auth = getAuth(app);
+// Safe Firebase App and Auth Initialization
+let app: ReturnType<typeof initializeApp> | null = null;
+let authInstance: ReturnType<typeof getAuth> | null = null;
+
+try {
+  if (firebaseConfig && firebaseConfig.apiKey) {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    authInstance = getAuth(app);
+  }
+} catch (err) {
+  console.warn('Firebase Auth initialization caught warning (safe fallback active):', err);
+}
+
+export const auth = authInstance as ReturnType<typeof getAuth>;
 
 // Workspace OAuth Scopes
 export const SCOPES = [
   'https://www.googleapis.com/auth/gmail.send'
 ];
 
-const provider = new GoogleAuthProvider();
-SCOPES.forEach((scope) => provider.addScope(scope));
-provider.setCustomParameters({
-  prompt: 'select_account'
-});
+let provider: GoogleAuthProvider | null = null;
+try {
+  provider = new GoogleAuthProvider();
+  SCOPES.forEach((scope) => provider?.addScope(scope));
+  provider.setCustomParameters({
+    prompt: 'select_account'
+  });
+} catch (err) {
+  console.warn('GoogleAuthProvider initialization warning:', err);
+}
 
 // Flag to indicate if we are in the middle of a sign-in flow.
 let isSigningIn = false;
@@ -34,23 +50,38 @@ export const initAuth = (
   onAuthSuccess?: (user: User, token: string) => void,
   onAuthFailure?: () => void
 ) => {
-  return onAuthStateChanged(auth, async (user: User | null) => {
-    if (user) {
-      if (cachedAccessToken) {
-        if (onAuthSuccess) onAuthSuccess(user, cachedAccessToken);
-      } else if (!isSigningIn) {
+  if (!auth) {
+    if (onAuthFailure) onAuthFailure();
+    return () => {};
+  }
+
+  try {
+    return onAuthStateChanged(auth, async (user: User | null) => {
+      if (user) {
+        if (cachedAccessToken) {
+          if (onAuthSuccess) onAuthSuccess(user, cachedAccessToken);
+        } else if (!isSigningIn) {
+          cachedAccessToken = null;
+          if (onAuthFailure) onAuthFailure();
+        }
+      } else {
         cachedAccessToken = null;
         if (onAuthFailure) onAuthFailure();
       }
-    } else {
-      cachedAccessToken = null;
-      if (onAuthFailure) onAuthFailure();
-    }
-  });
+    });
+  } catch (err) {
+    console.warn('onAuthStateChanged registration notice:', err);
+    if (onAuthFailure) onAuthFailure();
+    return () => {};
+  }
 };
 
 // Must be called from a button click or user interaction
 export const googleSignIn = async (): Promise<{ user: User; accessToken: string } | null> => {
+  if (!auth || !provider) {
+    throw new Error('Google Authentication service is not initialized or configured in this environment.');
+  }
+
   try {
     isSigningIn = true;
     const result = await signInWithPopup(auth, provider);
@@ -78,6 +109,13 @@ export const setAccessToken = (token: string | null) => {
 };
 
 export const logout = async () => {
-  await signOut(auth);
+  if (auth) {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      console.warn('Signout warning:', e);
+    }
+  }
   cachedAccessToken = null;
 };
+
