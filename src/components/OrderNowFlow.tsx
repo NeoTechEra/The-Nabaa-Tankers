@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Radio, Truck, User, MapPin, Clock, Phone, Navigation, CheckCircle2, RotateCcw, ArrowRight, ShieldCheck, Zap, MessageCircle } from 'lucide-react';
 import { DEMO_DRIVER } from '../data/mockData';
 
-export const OrderNowFlow: React.FC = () => {
+interface OrderNowFlowProps {
+  onStartOrder?: () => void;
+}
+
+export const OrderNowFlow: React.FC<OrderNowFlowProps> = ({ onStartOrder }) => {
   const [simulationState, setSimulationState] = useState<'idle' | 'searching' | 'driver_found' | 'en_route'>('searching');
   const [searchTimer, setSearchTimer] = useState<number>(3);
 

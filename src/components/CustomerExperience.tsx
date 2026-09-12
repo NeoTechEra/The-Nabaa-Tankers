@@ -3,7 +3,7 @@ import { Smartphone, MapPin, Truck, Check, KeyRound, Building2, Home, Warehouse,
 import { TANKER_MODELS } from '../data/mockData';
 
 interface CustomerExperienceProps {
-  onSelectTanker: (tankerId: string) => void;
+  onSelectTanker?: (tankerId: string) => void;
 }
 
 export const CustomerExperience: React.FC<CustomerExperienceProps> = ({ onSelectTanker }) => {

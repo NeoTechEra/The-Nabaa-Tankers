@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Calendar as CalendarIcon, Clock, CheckCircle2, ChevronLeft, ChevronRight, Bell, Sparkles } from 'lucide-react';
 
-export const ScheduledDelivery: React.FC = () => {
+interface ScheduledDeliveryProps {
+  onScheduleOrder?: () => void;
+}
+
+export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onScheduleOrder }) => {
   const [selectedDay, setSelectedDay] = useState<string>('Tomorrow');
   const [selectedSlot, setSelectedSlot] = useState<string>('10:00 AM – 11:30 AM');
   const [isRecurring, setIsRecurring] = useState<boolean>(false);

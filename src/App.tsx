@@ -66,7 +66,7 @@ export default function App() {
         <PlatformOverview />
 
         {/* 4. Customer Experience: 3-Step Journey */}
-        <CustomerExperience />
+        <CustomerExperience onSelectTanker={(tankerId) => handleOpenOrderModal(tankerId)} />
 
         {/* 5. Order Now Immediate Dispatch Flow with Radar */}
         <OrderNowFlow onStartOrder={() => handleOpenOrderModal('tanker-19t')} />
