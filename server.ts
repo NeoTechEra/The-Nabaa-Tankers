@@ -56,13 +56,30 @@ app.post("/api/send-demo-email", async (req, res) => {
     }
 
     // Default sender: Resend free sandbox sender or custom domain sender if configured
-    const sender = process.env.RESEND_FROM_EMAIL || "The Nabaa Tankers <onboarding@resend.dev>";
+    const sender = process.env.RESEND_FROM_EMAIL?.trim() || "The Nabaa Tankers <onboarding@resend.dev>";
     const businessEmail = "thenabaatankers@gmail.com";
+    const isSandbox = sender.includes("resend.dev");
+
+    // Clean & validate target email
+    const clientEmail = String(demo.email || "").trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(clientEmail)) {
+      return res.status(400).json({ success: false, error: "Invalid recipient email address" });
+    }
+
+    // Determine target recipient for customer messages:
+    // When using Resend's free test sender (onboarding@resend.dev), Resend enforces that emails can ONLY
+    // be delivered to the account owner's email address (thenabaatankers@gmail.com).
+    // Routing external customer copies to the admin email in sandbox prevents API validation_error (403).
+    const isClientAdmin = clientEmail.toLowerCase() === businessEmail.toLowerCase();
+    const customerRecipient = (!isSandbox || isClientAdmin) ? clientEmail : businessEmail;
+    const isSandboxRerouted = isSandbox && !isClientAdmin;
 
     // 1. New Demo Request Notification
     if (action === "created") {
-      // Email to Admin
-      const adminEmailResult = await resend.emails.send({
+      // Email 1: Notification to Admin
+      let adminEmailId: string | undefined;
+      const adminResult = await resend.emails.send({
         from: sender,
         to: [businessEmail],
         subject: `[New Demo Request] ${demo.id} - ${demo.name} (${demo.companyName || "Individual"})`,
@@ -79,7 +96,7 @@ app.post("/api/send-demo-email", async (req, res) => {
                 <tr><td style="color: #94a3b8; padding: 6px 0;">Request ID:</td><td style="color: #00f0ff; font-weight: bold; font-family: monospace;">${demo.id}</td></tr>
                 <tr><td style="color: #94a3b8; padding: 6px 0;">Client Name:</td><td style="color: #ffffff; font-weight: 600;">${demo.name}</td></tr>
                 <tr><td style="color: #94a3b8; padding: 6px 0;">Company:</td><td style="color: #ffffff;">${demo.companyName || "Individual / Not specified"}</td></tr>
-                <tr><td style="color: #94a3b8; padding: 6px 0;">Email:</td><td><a href="mailto:${demo.email}" style="color: #38bdf8;">${demo.email}</a></td></tr>
+                <tr><td style="color: #94a3b8; padding: 6px 0;">Email:</td><td><a href="mailto:${clientEmail}" style="color: #38bdf8;">${clientEmail}</a></td></tr>
                 <tr><td style="color: #94a3b8; padding: 6px 0;">Phone:</td><td style="color: #ffffff; font-family: monospace;">${demo.phone}</td></tr>
                 <tr><td style="color: #94a3b8; padding: 6px 0;">Topic:</td><td style="color: #ffffff;">${demo.interestedIn}</td></tr>
                 <tr><td style="color: #94a3b8; padding: 6px 0;">Requested Time:</td><td style="color: #34d399; font-weight: bold;">${demo.preferredDate} (${demo.preferredTime})</td></tr>
@@ -94,61 +111,90 @@ app.post("/api/send-demo-email", async (req, res) => {
           </div>
         `,
       });
+      if (adminResult.error) {
+        console.warn("[Resend Admin Email Notice]:", adminResult.error.message);
+      } else {
+        adminEmailId = adminResult.data?.id;
+      }
 
-      // Email to Customer
-      let customerEmailResult = null;
-      try {
-        customerEmailResult = await resend.emails.send({
-          from: sender,
-          to: [demo.email],
-          subject: `Demo Request Received - The Nabaa Tankers (Ref: ${demo.id})`,
-          html: `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0c162d; color: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #00f0ff33;">
-              <h2 style="color: #00f0ff; margin-top: 0;">Demo Request Received</h2>
-              <p style="color: #e2e8f0; font-size: 15px; line-height: 1.6;">
-                Dear <strong>${demo.name}</strong>,
-              </p>
-              <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
-                Thank you for requesting a live demonstration of <strong>The Nabaa Tankers</strong> platform. Your request has been assigned reference ID <strong style="color: #00f0ff; font-family: monospace;">${demo.id}</strong>.
-              </p>
-              
-              <div style="background: #132247; border-radius: 8px; padding: 16px; margin: 20px 0;">
-                <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 12px; text-transform: uppercase;">Requested Details:</p>
-                <p style="margin: 4px 0; color: #ffffff;"><strong>Session:</strong> ${demo.interestedIn}</p>
-                <p style="margin: 4px 0; color: #ffffff;"><strong>Preferred Schedule:</strong> ${demo.preferredDate} at ${demo.preferredTime}</p>
-                <p style="margin: 4px 0; color: #38bdf8;"><strong>Status:</strong> Awaiting Operations Team Review</p>
-              </div>
+      // Email 2: Confirmation copy to customer (or admin reroute in sandbox mode)
+      let customerEmailId: string | undefined;
+      const customerSubject = isSandboxRerouted
+        ? `[Customer Copy - Sandbox] Demo Request Received for ${demo.name} (${clientEmail})`
+        : `Demo Request Received - The Nabaa Tankers (Ref: ${demo.id})`;
 
-              <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
-                Our fleet operations team will review your requested time slot and send you the verified video conference link shortly.
-              </p>
+      const sandboxNoticeHtml = isSandboxRerouted
+        ? `<div style="background: #eab30822; border: 1px solid #eab30866; color: #fef08a; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; line-height: 1.5;">
+            <strong>Sandbox Mode Delivery:</strong> This customer receipt was delivered to <code>${businessEmail}</code> because the current Resend sender is using <code>onboarding@resend.dev</code>. To deliver directly to external recipients, verify your custom domain in Resend.
+           </div>`
+        : "";
 
-              <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #1e293b; font-size: 12px; color: #64748b;">
-                The Nabaa Tankers Logistics &bull; Support: <a href="mailto:thenabaatankers@gmail.com" style="color: #38bdf8;">thenabaatankers@gmail.com</a>
-              </div>
+      const customerResult = await resend.emails.send({
+        from: sender,
+        to: [customerRecipient],
+        subject: customerSubject,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0c162d; color: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #00f0ff33;">
+            ${sandboxNoticeHtml}
+            <h2 style="color: #00f0ff; margin-top: 0;">Demo Request Received</h2>
+            <p style="color: #e2e8f0; font-size: 15px; line-height: 1.6;">
+              Dear <strong>${demo.name}</strong>,
+            </p>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+              Thank you for requesting a live demonstration of <strong>The Nabaa Tankers</strong> platform. Your request has been assigned reference ID <strong style="color: #00f0ff; font-family: monospace;">${demo.id}</strong>.
+            </p>
+            
+            <div style="background: #132247; border-radius: 8px; padding: 16px; margin: 20px 0;">
+              <p style="margin: 0 0 8px 0; color: #94a3b8; font-size: 12px; text-transform: uppercase;">Requested Details:</p>
+              <p style="margin: 4px 0; color: #ffffff;"><strong>Session:</strong> ${demo.interestedIn}</p>
+              <p style="margin: 4px 0; color: #ffffff;"><strong>Preferred Schedule:</strong> ${demo.preferredDate} at ${demo.preferredTime}</p>
+              <p style="margin: 4px 0; color: #38bdf8;"><strong>Status:</strong> Awaiting Operations Team Review</p>
             </div>
-          `,
-        });
-      } catch (custErr: any) {
-        // In free testing sandbox, Resend may restrict sending to unverified addresses until domain is added
-        console.warn("[Resend] Customer email note:", custErr?.message || custErr);
+
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">
+              Our fleet operations team will review your requested time slot and send you the verified video conference link shortly.
+            </p>
+
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #1e293b; font-size: 12px; color: #64748b;">
+              The Nabaa Tankers Logistics &bull; Support: <a href="mailto:thenabaatankers@gmail.com" style="color: #38bdf8;">thenabaatankers@gmail.com</a>
+            </div>
+          </div>
+        `,
+      });
+      if (customerResult.error) {
+        console.warn("[Resend Customer Email Notice]:", customerResult.error.message);
+      } else {
+        customerEmailId = customerResult.data?.id;
       }
 
       return res.json({
         success: true,
-        adminEmailId: adminEmailResult.data?.id,
-        customerEmailId: customerEmailResult?.data?.id,
+        adminEmailId,
+        customerEmailId,
+        sandboxRerouted: isSandboxRerouted,
       });
     }
 
     // 2. Demo Confirmed Notification
     if (action === "confirmed") {
+      let confirmResultId: string | undefined;
+      const confirmSubject = isSandboxRerouted
+        ? `[Customer Copy - Sandbox] Demo Confirmed for ${demo.name} (${clientEmail})`
+        : `Your Demo is Confirmed: The Nabaa Tankers (Ref: ${demo.id})`;
+
+      const sandboxNoticeHtml = isSandboxRerouted
+        ? `<div style="background: #eab30822; border: 1px solid #eab30866; color: #fef08a; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; line-height: 1.5;">
+            <strong>Sandbox Mode Delivery:</strong> This meeting confirmation was delivered to <code>${businessEmail}</code> because the sender is on <code>onboarding@resend.dev</code>. To send directly to clients, verify your domain in Resend.
+           </div>`
+        : "";
+
       const confirmResult = await resend.emails.send({
         from: sender,
-        to: [demo.email],
-        subject: `Your Demo is Confirmed: The Nabaa Tankers (Ref: ${demo.id})`,
+        to: [customerRecipient],
+        subject: confirmSubject,
         html: `
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0c162d; color: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #10b98155;">
+            ${sandboxNoticeHtml}
             <span style="background: #10b98122; color: #10b981; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: bold; border: 1px solid #10b98155;">DEMO CONFIRMED</span>
             <h2 style="color: #ffffff; margin: 12px 0 8px 0;">Your Meeting is Scheduled</h2>
             <p style="color: #cbd5e1; font-size: 14px;">Dear ${demo.name}, your live session for <strong>The Nabaa Tankers</strong> has been confirmed.</p>
@@ -169,7 +215,17 @@ app.post("/api/send-demo-email", async (req, res) => {
         `,
       });
 
-      return res.json({ success: true, confirmResultId: confirmResult.data?.id });
+      if (confirmResult.error) {
+        console.warn("[Resend Confirm Email Notice]:", confirmResult.error.message);
+      } else {
+        confirmResultId = confirmResult.data?.id;
+      }
+
+      return res.json({
+        success: true,
+        confirmResultId,
+        sandboxRerouted: isSandboxRerouted,
+      });
     }
 
     return res.status(400).json({ success: false, error: "Unknown action" });
