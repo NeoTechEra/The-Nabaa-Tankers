@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Smartphone, Shield, Truck, ArrowDown, ArrowRight, CheckCircle2, Users, Layers, Activity, RefreshCw } from 'lucide-react';
+import { Smartphone, Shield, Truck, ArrowRight, CheckCircle2, Layers, Activity } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export const PlatformOverview: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'customer' | 'driver' | 'admin'>('customer');
+  const { t, isRTL, language } = useLanguage();
 
   return (
     <section id="how-it-works" className="py-20 lg:py-28 relative bg-[#070e1c] border-y border-slate-800/80">
@@ -15,13 +17,13 @@ export const PlatformOverview: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/90 text-cyan-400 text-xs font-semibold uppercase tracking-wider border border-slate-700">
             <Layers className="w-3.5 h-3.5" />
-            <span>Unified Architecture</span>
+            <span>{t.platformOverview.tag}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight">
-            One Platform. Three Connected Experiences.
+            {t.platformOverview.title}
           </h2>
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            The Nabaa is not just a tanker ordering app—it is a specialized, intelligent digital water delivery ecosystem unifying demand, road logistics, and central management.
+            {t.platformOverview.subtitle}
           </p>
         </div>
 
@@ -29,7 +31,7 @@ export const PlatformOverview: React.FC = () => {
         <div className="bg-[#09152b]/90 border border-slate-700/80 rounded-3xl p-6 lg:p-10 mb-16 shadow-2xl backdrop-blur-xl">
           <div className="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-6 flex items-center gap-2">
             <Activity className="w-4 h-4 animate-pulse" />
-            <span>Connected Real-Time Data Flow</span>
+            <span>{isRTL ? 'تدفق البيانات المتصل في الوقت الفعلي' : 'Connected Real-Time Data Flow'}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative">
@@ -48,30 +50,26 @@ export const PlatformOverview: React.FC = () => {
                   <Smartphone className="w-6 h-6" />
                 </div>
                 <span className="text-xs font-mono text-cyan-300 bg-cyan-950 px-2 py-1 rounded border border-cyan-800">
-                  iOS & Android
+                  {language === 'ar' ? 'تطبيق العميل' : 'iOS & Android'}
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-white font-display mb-2">1. Customer App</h3>
+              <h3 className="text-xl font-bold text-white font-display mb-2">
+                {t.platformOverview.roles.customer.title}
+              </h3>
               <p className="text-sm text-slate-300 mb-4 leading-relaxed">
-                For residential villas, compounds, commercial facilities, farms, and sites to order on-demand or schedule water tanker deliveries in minutes.
+                {t.platformOverview.roles.customer.desc}
               </p>
               <div className="space-y-1.5 text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Instant OTP mobile sign-in</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>10T, 19T, 32T selection</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Live GPS ETA & tracking</span>
-                </div>
+                {t.platformOverview.roles.customer.features.map((feat, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <span>{feat}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Central Nabaa Platform Routing Core */}
+            {/* 2. Driver Node */}
             <div 
               onClick={() => setActiveTab('driver')}
               className={`p-6 rounded-2xl transition-all cursor-pointer border ${
@@ -85,26 +83,22 @@ export const PlatformOverview: React.FC = () => {
                   <Truck className="w-6 h-6" />
                 </div>
                 <span className="text-xs font-mono text-blue-300 bg-blue-950 px-2 py-1 rounded border border-blue-800">
-                  Driver Fleet
+                  {language === 'ar' ? 'أسطول السائقين' : 'Driver Fleet'}
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-white font-display mb-2">2. Driver & Fleet App</h3>
+              <h3 className="text-xl font-bold text-white font-display mb-2">
+                {t.platformOverview.roles.driver.title}
+              </h3>
               <p className="text-sm text-slate-300 mb-4 leading-relaxed">
-                Empowers tanker drivers with real-time dispatch alerts, turn-by-turn tanker navigation, status milestones, and clear wallet commissions.
+                {t.platformOverview.roles.driver.desc}
               </p>
               <div className="space-y-1.5 text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
-                  <span>One-tap Online / Offline toggle</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Incoming order radar & accept</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Direct wallet earnings & payouts</span>
-                </div>
+                {t.platformOverview.roles.driver.features.map((feat, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                    <span>{feat}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -122,26 +116,22 @@ export const PlatformOverview: React.FC = () => {
                   <Shield className="w-6 h-6" />
                 </div>
                 <span className="text-xs font-mono text-emerald-300 bg-emerald-950 px-2 py-1 rounded border border-emerald-800">
-                  Central Web Hub
+                  {language === 'ar' ? 'المركز الإداري' : 'Central Web Hub'}
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-white font-display mb-2">3. Central Admin Dashboard</h3>
+              <h3 className="text-xl font-bold text-white font-display mb-2">
+                {t.platformOverview.roles.admin.title}
+              </h3>
               <p className="text-sm text-slate-300 mb-4 leading-relaxed">
-                For business owners, fleet dispatchers, and operations teams to monitor live deliveries, manage tankers, calibrate commissions, and inspect revenue.
+                {t.platformOverview.roles.admin.desc}
               </p>
               <div className="space-y-1.5 text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Live order dispatch command center</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Tanker compliance & driver oversight</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Promotions & commission rules</span>
-                </div>
+                {t.platformOverview.roles.admin.features.map((feat, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>{feat}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -149,13 +139,21 @@ export const PlatformOverview: React.FC = () => {
 
           {/* Workflow arrows visualization */}
           <div className="mt-8 pt-6 border-t border-slate-800/80 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-400">
-            <span className="px-3 py-1 rounded-full bg-slate-800/80 text-cyan-300 border border-slate-700">Customer Request</span>
-            <ArrowRight className="w-4 h-4 text-cyan-500 hidden sm:inline" />
-            <span className="px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">The Nabaa Dispatch Core</span>
-            <ArrowRight className="w-4 h-4 text-cyan-500 hidden sm:inline" />
-            <span className="px-3 py-1 rounded-full bg-slate-800/80 text-blue-300 border border-slate-700">Driver Fulfilment</span>
+            <span className="px-3 py-1 rounded-full bg-slate-800/80 text-cyan-300 border border-slate-700">
+              {language === 'ar' ? 'طلب العميل' : 'Customer Request'}
+            </span>
+            <ArrowRight className={`w-4 h-4 text-cyan-500 hidden sm:inline ${isRTL ? 'rotate-180' : ''}`} />
+            <span className="px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">
+              {language === 'ar' ? 'محرك توجيه نبع الذكي' : 'The Nabaa Dispatch Core'}
+            </span>
+            <ArrowRight className={`w-4 h-4 text-cyan-500 hidden sm:inline ${isRTL ? 'rotate-180' : ''}`} />
+            <span className="px-3 py-1 rounded-full bg-slate-800/80 text-blue-300 border border-slate-700">
+              {language === 'ar' ? 'تنفيذ وتوصيل السائق' : 'Driver Fulfilment'}
+            </span>
             <span className="text-slate-600 hidden sm:inline">•</span>
-            <span className="px-3 py-1 rounded-full bg-emerald-950/60 text-emerald-300 border border-emerald-800">Admin Operational Oversight</span>
+            <span className="px-3 py-1 rounded-full bg-emerald-950/60 text-emerald-300 border border-emerald-800">
+              {language === 'ar' ? 'المتابعة التشغيلية للإدارة' : 'Admin Operational Oversight'}
+            </span>
           </div>
 
         </div>

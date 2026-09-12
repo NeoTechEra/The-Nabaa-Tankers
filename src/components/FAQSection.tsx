@@ -1,9 +1,46 @@
 import React, { useState } from 'react';
-import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { HelpCircle, ChevronDown } from 'lucide-react';
 import { FAQ_LIST } from '../data/mockData';
+import { useLanguage } from '../context/LanguageContext';
 
 export const FAQSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const { t, isRTL, language } = useLanguage();
+
+  const faqs = language === 'ar' ? [
+    {
+      question: 'ما هي منصة نبع لتوريد المياه؟',
+      answer: 'نبع هي منصة رقمية متخصصة ومبتكرة لإدارة وتوصيل صهاريج المياه الصالحة للشرب، تربط بين طالبي المياه (المنازل، المزارع، والمنشآت) وسائقي الصهاريج وغرفة العمليات في منظومة واحدة متكاملة.'
+    },
+    {
+      question: 'هل يمكنني طلب صهريج مياه فوري؟',
+      answer: 'نعم بالتأكيد. تتيح لك خاصية "اطلب الآن" إرسال طلب فوري لنقل وتفريغ المياه، حيث يوجه النظام الذكي أقرب صهريج متاح ومتطابق مع مواصفات خزانك في غضون دقائق.'
+    },
+    {
+      question: 'هل يمكن جدولة وصول الصهريج لموعد لاحق؟',
+      answer: 'نعم. يمكنك اختيار يوم ووقت التوصيل المناسب بدقة، وتحديد نوع الخزان وسعة الصهريج، مع إمكانية تفعيل التوصيل الدوري الأسبوعي لتفادي انقطاع المياه تماماً.'
+    },
+    {
+      question: 'كيف يمكنني استخدام أكواد وقسائم الخصم؟',
+      answer: 'تدعم شاشة إتمام الطلب تطبيق العروض التلقائية للعملاء الجدد والمواسم، بالإضافة إلى إمكانية إدخال أكواد الخصم مثل (WATERFAST أو SUMMER10) لاحتساب الخصم الفوري.'
+    },
+    {
+      question: 'كيف يستقبل السائقون طلبات توصيل المياه؟',
+      answer: 'يتلقى السائقون إشعارات وتنبيهات صوتية فورية عبر تطبيق السائق المخصص، تحتوي على عنوان العميل، نوع الخزان، طول الخرطوم، المسافة، وصافي الأرباح المتوقعة، مع خيار القبول الفوري.'
+    },
+    {
+      question: 'هل يستطيع السائق متابعة أرباحه ومحفظته؟',
+      answer: 'نعم، يتضمن تطبيق السائق محفظة مالية رقمية متكاملة توضح تفاصيل أرباح كل رحلة، إجمالي الرصيد اليومي والأسبوعي، وإمكانية طلب التحويل البنكي بسهولة.'
+    },
+    {
+      question: 'هل تدعم المنصة إدارة أساطيل الصهاريج المتعددة؟',
+      answer: 'صُممت منصة نبع خصيصاً لمشغلي الأساطيل وأصحاب الصهاريج التجارية، حيث تتيح تسجيل ومتابعة وفحص تراخيص الصهاريج (10، 19، 32 طن) وتعيين السائقين ومراقبة حركة الأسطول على الخريطة.'
+    },
+    {
+      question: 'هل يمكن للإدارة إنشاء حملات عروض ترويجية؟',
+      answer: 'نعم، توفر لوحة التحكم المركزية للإدارة صلاحيات متكاملة لتخصيص الخصومات (كنسبة مئوية أو مبلغ ثابت)، وتحديد سقف الخصم، والحد الأدنى للطلب، وتاريخ الصلاحية بسهولة.'
+    }
+  ] : FAQ_LIST;
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -17,19 +54,21 @@ export const FAQSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider">
             <HelpCircle className="w-3.5 h-3.5" />
-            <span>Frequently Asked Questions</span>
+            <span>{language === 'ar' ? 'الأسئلة الشائعة والأجوبة' : 'Frequently Asked Questions'}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight">
-            Everything You Need to Know
+            {language === 'ar' ? 'كل ما تحتاج معرفته عن نبع' : 'Everything You Need to Know'}
           </h2>
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            Clarifications on immediate water dispatch, driver earnings, fleet compliance, and platform capabilities.
+            {language === 'ar'
+              ? 'إجابات واضحة وشاملة حول طلب الصهاريج الفورية، الجدولة المسبقة، أرباح السائقين، والامتثال اللوجستي للأساطيل.'
+              : 'Clarifications on immediate water dispatch, driver earnings, fleet compliance, and platform capabilities.'}
           </p>
         </div>
 
         {/* Accordion List */}
         <div className="space-y-4">
-          {FAQ_LIST.map((faq, idx) => {
+          {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <div
@@ -38,7 +77,7 @@ export const FAQSection: React.FC = () => {
               >
                 <button
                   onClick={() => toggleFAQ(idx)}
-                  className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-800/30 transition-colors"
+                  className={`w-full px-6 py-5 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-800/30 transition-colors ${isRTL ? 'text-right' : 'text-left'}`}
                 >
                   <span className="text-base sm:text-lg font-bold text-white font-display">
                     {faq.question}
@@ -49,7 +88,7 @@ export const FAQSection: React.FC = () => {
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-1 text-sm text-slate-300 leading-relaxed border-t border-slate-800/60 font-normal">
+                  <div className={`px-6 pb-6 pt-1 text-sm text-slate-300 leading-relaxed border-t border-slate-800/60 font-normal ${isRTL ? 'text-right' : 'text-left'}`}>
                     {faq.answer}
                   </div>
                 )}

@@ -1,8 +1,36 @@
 import React from 'react';
 import { Zap, ShieldCheck, Layers, Eye, Sparkles } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export const WhyNabaa: React.FC = () => {
-  const values = [
+  const { t, isRTL, language } = useLanguage();
+
+  const values = language === 'ar' ? [
+    {
+      icon: Zap,
+      title: 'طلب فوري ومجدول',
+      desc: 'اطلب فوراً عند نفاد المياه المفاجئ، أو جدول مواعيد مسبقة تناسب أوقات تواجدك بكل سهولة.',
+      tag: 'فوري ومجدول مسبقاً'
+    },
+    {
+      icon: ShieldCheck,
+      title: 'تسعير واضح وعادل',
+      desc: 'أسعار واضحة ومحددة مسبقاً بالريال السعودي بحسب حمولة الصهريج دون مساومة أو مفاجآت.',
+      tag: 'شفافية مالية تامة'
+    },
+    {
+      icon: Layers,
+      title: 'منظومة رقمية مترابطة',
+      desc: 'ربط لحظي ومتزامن بين طالبي المياه، أسطول الصهاريج، وغرفة التحكم المركزية.',
+      tag: 'إدارة تشغيلية متكاملة'
+    },
+    {
+      icon: Eye,
+      title: 'وضوح وتتبع دقيق',
+      desc: 'رؤية كاملة لموقع الصهريج، تقييمات السائق، مسار الطريق، وسرعة ضخ المياه في خزانك.',
+      tag: 'تحكم ورقابة شاملة'
+    }
+  ] : [
     {
       icon: Zap,
       title: 'Fast Ordering',
@@ -37,13 +65,15 @@ export const WhyNabaa: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Platform Advantages</span>
+            <span>{language === 'ar' ? 'مزايا منصة نبع' : 'Platform Advantages'}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight">
-            Why Choose The Nabaa
+            {language === 'ar' ? 'لماذا تختار منصة نبع؟' : 'Why Choose The Nabaa'}
           </h2>
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            Eliminating fragmented phone dispatch and replacing it with dependable, digitally orchestrated water logistics.
+            {language === 'ar'
+              ? 'إنهاء عشوائية الاتصالات الهاتفية والانتظار الطويل، واستبدالها بحلول لوجستية ذكية وموثوقة لتوريد المياه.'
+              : 'Eliminating fragmented phone dispatch and replacing it with dependable, digitally orchestrated water logistics.'}
           </p>
         </div>
 
@@ -69,7 +99,7 @@ export const WhyNabaa: React.FC = () => {
 
                 <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center gap-1.5 text-xs text-slate-400 font-mono">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                  <span>The Nabaa Standard</span>
+                  <span>{language === 'ar' ? 'معايير نبع المعتمدة' : 'The Nabaa Standard'}</span>
                 </div>
               </div>
             );

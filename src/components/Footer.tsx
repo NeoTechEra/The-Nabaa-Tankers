@@ -1,5 +1,6 @@
 import React from 'react';
 import { Droplets, Shield, MapPin, ArrowUp, ChevronRight, Phone, MessageCircle } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface FooterProps {
   onOpenOrderModal?: (tankerId?: string) => void;
@@ -7,6 +8,8 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModal }) => {
+  const { t, isRTL, language } = useLanguage();
+
   const phoneDisplay = '+966 53 043 4010';
   const phoneTel = '+966530434010';
   const whatsappDisplay = '+92 333 0717198';
@@ -47,33 +50,42 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-black tracking-tight text-white font-display">
-                  THE NABAA <span className="text-cyan-400 font-sans font-semibold text-xs tracking-widest uppercase">TANKERS</span>
+                  {language === 'ar' ? 'صهاريج نبع' : 'THE NABAA'}{' '}
+                  <span className="text-cyan-400 font-sans font-semibold text-xs tracking-widest uppercase">
+                    {language === 'ar' ? 'الذكية' : 'TANKERS'}
+                  </span>
                 </span>
                 <span className="text-[10px] tracking-wider text-slate-400 uppercase font-mono">
-                  Water Delivery, Reimagined
+                  {language === 'ar' ? 'توريد المياه، برؤية رقمية' : 'Water Delivery, Reimagined'}
                 </span>
               </div>
             </div>
 
             <p className="text-sm text-slate-300 leading-relaxed max-w-sm">
-              A connected digital platform for customers, tanker drivers, and water delivery operations across Saudi Arabia and the GCC.
+              {language === 'ar'
+                ? 'منصة رقمية موحدة ومتكاملة للعملاء، وسائقي صهاريج المياه، وإدارة العمليات اللوجستية في المملكة العربية السعودية والخليج العربي.'
+                : 'A connected digital platform for customers, tanker drivers, and water delivery operations across Saudi Arabia and the GCC.'}
             </p>
 
             <div className="space-y-2 text-xs text-slate-400">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
-                <span>Riyadh • Jeddah • Dammam • GCC Region</span>
+                <span>{language === 'ar' ? 'الرياض • جدة • الدمام • دول مجلس التعاون الخليجي' : 'Riyadh • Jeddah • Dammam • GCC Region'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-cyan-400 shrink-0" />
-                <span>Compliant with National Water Company (NWC) Potable Standards</span>
+                <span>
+                  {language === 'ar'
+                    ? 'مطابقة لمعايير شركة المياه الوطنية (NWC) لجودة مياه الشرب'
+                    : 'Compliant with National Water Company (NWC) Potable Standards'}
+                </span>
               </div>
             </div>
 
             {/* Direct Contact & WhatsApp Hotline */}
             <div className="pt-2 space-y-2">
               <div className="text-[11px] font-mono text-cyan-400 uppercase tracking-wider font-semibold">
-                Direct Contact & Inquiries
+                {language === 'ar' ? 'التواصل المباشر والاستفسارات:' : 'Direct Contact & Inquiries'}
               </div>
               <div className="flex flex-wrap gap-2.5">
                 <a
@@ -82,6 +94,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 hover:text-white transition-all text-xs font-mono"
                   title="WhatsApp The Nabaa Tankers"
+                  dir="ltr"
                 >
                   <MessageCircle className="w-4 h-4 text-emerald-400" />
                   <span>WhatsApp: <strong>{whatsappDisplay}</strong></span>
@@ -90,6 +103,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   href={`tel:${phoneTel}`}
                   className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 hover:text-white transition-all text-xs font-mono"
                   title="Call The Nabaa Tankers"
+                  dir="ltr"
                 >
                   <Phone className="w-4 h-4 text-cyan-400" />
                   <span>Call: <strong>{phoneDisplay}</strong></span>
@@ -98,11 +112,11 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
             </div>
           </div>
 
-          {/* Col 3: Customer App (Activated & Direct Interactive Links) */}
+          {/* Col 3: Customer App */}
           <div className="space-y-3">
             <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-              <span>Customer App</span>
+              <span>{language === 'ar' ? 'تطبيق العميل' : 'Customer App'}</span>
             </h4>
             <ul className="space-y-2.5 text-xs text-slate-300">
               <li>
@@ -111,8 +125,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'order-flow')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Immediate Order Dispatch</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'طلب صهريج فوري' : 'Immediate Order Dispatch'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -121,8 +137,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'scheduled-flow')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Scheduled Water Refills</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'الجدولة والتوريد الدوري' : 'Scheduled Water Refills'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -131,8 +149,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'promotions')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Promo Codes & Discounts</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'أكواد الخصم والعروض' : 'Promo Codes & Discounts'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -141,8 +161,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'tankers')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">10T, 19T, 32T Capacities</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'سعات الصهاريج (10، 19، 32 طن)' : '10T, 19T, 32T Capacities'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -151,8 +173,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'doorstep-tracking')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Doorstep Radar Tracking</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'تتبع مسار الصهريج للباب' : 'Doorstep Radar Tracking'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
             </ul>
@@ -160,7 +184,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
 
           {/* Col 4: Driver & Fleet */}
           <div className="space-y-3">
-            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white">Driver & Fleet</h4>
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+              {language === 'ar' ? 'السائقون والأسطول' : 'Driver & Fleet'}
+            </h4>
             <ul className="space-y-2.5 text-xs text-slate-300">
               <li>
                 <a
@@ -168,8 +194,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'driver-app')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Driver Mobile App</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'تطبيق السائق المتخصص' : 'Driver Mobile App'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -178,8 +206,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'driver-app')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Driver Wallet & Payouts</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'المحفظة الرقمية وتحويل الأرباح' : 'Driver Wallet & Payouts'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -188,8 +218,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'driver-app')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Trip History & Ratings</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'سجل الرحلات وتقييم العملاء' : 'Trip History & Ratings'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -198,8 +230,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'tankers')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Tanker Specifications</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'مواصفات وتجهيزات الصهاريج' : 'Tanker Specifications'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
             </ul>
@@ -207,7 +241,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
 
           {/* Col 5: Operations & Business */}
           <div className="space-y-3">
-            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white">Operations Hub</h4>
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+              {language === 'ar' ? 'غرفة العمليات' : 'Operations Hub'}
+            </h4>
             <ul className="space-y-2.5 text-xs text-slate-300">
               <li>
                 <a
@@ -215,8 +251,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'admin-dashboard')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Central Admin Command</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'لوحة التحكم المركزية' : 'Central Admin Command'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -225,8 +263,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'admin-dashboard')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Fleet Dispatch & Heatmap</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'خريطة الأسطول والتوجيه' : 'Fleet Dispatch & Heatmap'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -235,8 +275,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'admin-dashboard')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Driver Commission Rules</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'هيكلة العمولات والحسابات' : 'Driver Commission Rules'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -245,8 +287,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'about')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">About The Nabaa</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'عن صهاريج نبع' : 'About The Nabaa'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               <li>
@@ -255,8 +299,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                   onClick={(e) => handleScrollTo(e, 'faq')}
                   className="hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-0.5"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Platform FAQ</span>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity" />
+                  <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                    {language === 'ar' ? 'الأسئلة المتكررة' : 'Platform FAQ'}
+                  </span>
+                  <ChevronRight className={`w-3.5 h-3.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </li>
               {onOpenDemoModal && (
@@ -265,8 +311,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
                     onClick={onOpenDemoModal}
                     className="w-full text-left font-semibold text-cyan-400 hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer py-1"
                   >
-                    <span className="group-hover:translate-x-1 transition-transform">Book a Demo / Fix Meeting</span>
-                    <ChevronRight className="w-3.5 h-3.5 opacity-100 text-cyan-400 transition-opacity" />
+                    <span className={`group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform`}>
+                      {language === 'ar' ? 'طلب موعد أو عرض مباشر' : 'Book a Demo / Fix Meeting'}
+                    </span>
+                    <ChevronRight className={`w-3.5 h-3.5 opacity-100 text-cyan-400 transition-opacity ${isRTL ? 'rotate-180' : ''}`} />
                   </button>
                 </li>
               )}
@@ -278,11 +326,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <div>
-            © 2026 The Nabaa Tankers. All rights reserved.
+            {language === 'ar' ? '© 2026 صهاريج نبع الذكية. جميع الحقوق محفوظة.' : '© 2026 The Nabaa Tankers. All rights reserved.'}
           </div>
 
           <div className="text-center sm:text-right text-[11px] text-slate-500 font-mono">
-            * All data, driver names, vehicle IDs, and metrics shown on this website are for demonstration purposes.
+            {language === 'ar'
+              ? '* جميع البيانات وأرقام الصهاريج والأسماء المعروضة هي لأغراض العرض التوضيحي ومحاكاة المنصة.'
+              : '* All data, driver names, vehicle IDs, and metrics shown on this website are for demonstration purposes.'}
           </div>
 
           <button

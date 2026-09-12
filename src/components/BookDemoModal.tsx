@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   X, Calendar, Clock, Video, Building2, User, Mail, Phone, 
-  CheckCircle2, ChevronRight, ShieldCheck, Sparkles, MessageSquare, 
-  MapPin, Globe, ExternalLink, Download, Send, AlertCircle
+  CheckCircle2, ChevronRight, ExternalLink
 } from 'lucide-react';
 import { notifyNabaaBooking, TARGET_GMAIL } from '../services/gmail';
-import { initAuth, googleSignIn, getAccessToken } from '../services/auth';
+import { initAuth, googleSignIn } from '../services/auth';
+import { useLanguage } from '../context/LanguageContext';
 
 interface BookDemoModalProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ interface BookDemoModalProps {
 
 export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose }) => {
   const [step, setStep] = useState<'form' | 'success'>('form');
+  const { t, isRTL, language } = useLanguage();
   
   // Form fields
   const [demoType, setDemoType] = useState<string>('full-platform');
@@ -59,7 +60,26 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
 
   if (!isOpen) return null;
 
-  const demoTypes = [
+  const demoTypes = language === 'ar' ? [
+    {
+      id: 'full-platform',
+      title: 'عرض المنظومة المتكاملة',
+      duration: '30 دقيقة',
+      desc: 'تطبيق العميل، ملاحة السائقين، ولوحة التحكم المركزية في بث مباشر متزامن.'
+    },
+    {
+      id: 'fleet-operator',
+      title: 'إدارة أساطيل الصهاريج',
+      duration: '45 دقيقة',
+      desc: 'لملاك الصهاريج: قواعد عمولات السائقين، مراقبة الموقع، والتحويلات المالية.'
+    },
+    {
+      id: 'commercial-buyer',
+      title: 'عقود المجمعات والمنشآت',
+      duration: '30 دقيقة',
+      desc: 'توريد دوري منتظم، فواتير إلكترونية ضريبية، وضمانات سرعة الاستجابة.'
+    }
+  ] : [
     {
       id: 'full-platform',
       title: 'Full Platform Walkthrough',
@@ -80,7 +100,14 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
     }
   ];
 
-  const availableSlots = [
+  const availableSlots = language === 'ar' ? [
+    'غداً، 10:30 صباحاً (توقيت الرياض)',
+    'غداً، 02:00 ظهراً (توقيت الرياض)',
+    'غداً، 04:30 عصراً (توقيت الرياض)',
+    'بعد يومين، 11:00 صباحاً (توقيت الرياض)',
+    'بعد يومين، 03:00 عصراً (توقيت الرياض)',
+    'الاثنين القادم، 10:00 صباحاً (توقيت الرياض)'
+  ] : [
     'Tomorrow, 10:30 AM (AST)',
     'Tomorrow, 02:00 PM (AST)',
     'Tomorrow, 04:30 PM (AST)',
@@ -127,7 +154,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
   };
 
   const handleAddToCalendar = () => {
-    const title = encodeURIComponent("The Nabaa Tankers - Live Platform Demo & Consultation");
+    const title = encodeURIComponent(language === 'ar' ? "صهاريج نبع - عرض توضيحي مباشر للمنصة" : "The Nabaa Tankers - Live Platform Demo & Consultation");
     const details = encodeURIComponent(`Live interactive demo of The Nabaa Tankers digital water logistics platform.\nFormat: ${meetingFormat === 'video' ? 'Google Meet Video Call' : meetingFormat === 'in-person' ? 'In-person meeting (Riyadh)' : 'Phone consultation'}\nAttendee: ${fullName || 'Client'}\nCompany: ${company || 'General Inquiries'}`);
     const location = encodeURIComponent(meetingFormat === 'in-person' ? 'The Nabaa HQ, Riyadh, Saudi Arabia' : 'Google Meet Video Call');
     
@@ -149,20 +176,22 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-[11px] font-mono mb-2">
               <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Fix a Meeting / Live Demo</span>
+              <span>{language === 'ar' ? 'حجز موعد / عرض توضيحي مباشر' : 'Fix a Meeting / Live Demo'}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white font-display">
-              Book a Platform Demo
+              {language === 'ar' ? 'حجز جلسة استعراض لمنظومة نبع' : 'Book a Platform Demo'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-md">
-              Schedule a personalized 1-on-1 walkthrough of the Customer App, Driver App, and Admin Dispatch Hub.
+              {language === 'ar'
+                ? 'جلسة تعريفية مباشرة وتفاعلية لاستعراض تطبيق العميل وتطبيق السائق وغرفة العمليات المركزية.'
+                : 'Schedule a personalized 1-on-1 walkthrough of the Customer App, Driver App, and Admin Dispatch Hub.'}
             </p>
           </div>
 
           <button 
             onClick={handleResetAndClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer shrink-0"
-            title="Close modal"
+            className={`p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer shrink-0 ${isRTL ? 'mr-auto' : 'ml-auto'}`}
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -175,7 +204,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
             {/* 1. Select Demo Type */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 font-bold mb-2">
-                1. What would you like to explore?
+                {language === 'ar' ? '1. ما هو محور العرض الذي تفضله؟' : '1. What would you like to explore?'}
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {demoTypes.map((item) => (
@@ -183,7 +212,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                     key={item.id}
                     type="button"
                     onClick={() => setDemoType(item.id)}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                    className={`p-3 rounded-2xl border ${isRTL ? 'text-right' : 'text-left'} transition-all cursor-pointer flex flex-col justify-between ${
                       demoType === item.id
                         ? 'bg-cyan-500/15 border-cyan-400 text-white shadow-md shadow-cyan-500/10'
                         : 'bg-slate-900/70 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
@@ -208,7 +237,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
               {/* Meeting Format */}
               <div>
                 <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 font-bold mb-2">
-                  2. Meeting Format
+                  {language === 'ar' ? '2. وسيلة الاجتماع' : '2. Meeting Format'}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   <button
@@ -234,7 +263,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                     }`}
                   >
                     <Building2 className="w-4 h-4 text-cyan-400" />
-                    <span className="text-[11px]">In-Person (KSA)</span>
+                    <span className="text-[11px]">{language === 'ar' ? 'حضوري (الرياض)' : 'In-Person (KSA)'}</span>
                   </button>
 
                   <button
@@ -247,7 +276,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                     }`}
                   >
                     <Phone className="w-4 h-4 text-cyan-400" />
-                    <span className="text-[11px]">Phone / Voice</span>
+                    <span className="text-[11px]">{language === 'ar' ? 'مكالمة هاتفية' : 'Phone / Voice'}</span>
                   </button>
                 </div>
               </div>
@@ -255,7 +284,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
               {/* Slot Selector */}
               <div>
                 <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 font-bold mb-2">
-                  3. Select Date & Time Slot (Riyadh AST)
+                  {language === 'ar' ? '3. الموعد المناسب (توقيت الرياض)' : '3. Select Date & Time Slot (Riyadh AST)'}
                 </label>
                 <select
                   value={selectedDate}
@@ -270,7 +299,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                 </select>
                 <div className="text-[10px] text-slate-400 mt-1.5 flex items-center gap-1 font-mono">
                   <Clock className="w-3 h-3 text-cyan-400" />
-                  <span>Timezone: Arabia Standard Time (GMT+3)</span>
+                  <span>{language === 'ar' ? 'التوقيت القياسي العربي (جرينتش +3)' : 'Timezone: Arabia Standard Time (GMT+3)'}</span>
                 </div>
               </div>
             </div>
@@ -278,60 +307,62 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
             {/* 3. Contact Details */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 font-bold mb-2">
-                4. Your Contact Information
+                {language === 'ar' ? '4. بيانات التواصل' : '4. Your Contact Information'}
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <User className={`w-4 h-4 text-slate-500 absolute ${isRTL ? 'right-3' : 'left-3'} top-3`} />
                     <input
                       type="text"
                       required
-                      placeholder="Your Full Name *"
+                      placeholder={language === 'ar' ? 'الاسم الكريم *' : 'Your Full Name *'}
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      className={`w-full ${isRTL ? 'pr-9 pl-3' : 'pl-9 pr-3'} py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400`}
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <Mail className={`w-4 h-4 text-slate-500 absolute ${isRTL ? 'right-3' : 'left-3'} top-3`} />
                     <input
                       type="email"
                       required
-                      placeholder="Work Email *"
+                      placeholder={language === 'ar' ? 'البريد الإلكتروني للعمل *' : 'Work Email *'}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      className={`w-full ${isRTL ? 'pr-9 pl-3' : 'pl-9 pr-3'} py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400`}
+                      dir="ltr"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <Phone className={`w-4 h-4 text-slate-500 absolute ${isRTL ? 'right-3' : 'left-3'} top-3`} />
                     <input
                       type="tel"
                       required
-                      placeholder="Mobile / WhatsApp (+966...) *"
+                      placeholder={language === 'ar' ? 'الجوال / واتساب (+966...) *' : 'Mobile / WhatsApp (+966...) *'}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      className={`w-full ${isRTL ? 'pr-9 pl-3' : 'pl-9 pr-3'} py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono`}
+                      dir="ltr"
                     />
                   </div>
                 </div>
 
                 <div>
                   <div className="relative">
-                    <Building2 className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <Building2 className={`w-4 h-4 text-slate-500 absolute ${isRTL ? 'right-3' : 'left-3'} top-3`} />
                     <input
                       type="text"
-                      placeholder="Company or Compound Name"
+                      placeholder={language === 'ar' ? 'اسم الشركة أو المنشأة' : 'Company or Compound Name'}
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      className={`w-full ${isRTL ? 'pr-9 pl-3' : 'pl-9 pr-3'} py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400`}
                     />
                   </div>
                 </div>
@@ -340,26 +371,30 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
               {/* Fleet/Volume Selection */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Business Scale / Fleet Size</label>
+                  <label className="block text-[11px] text-slate-400 mb-1">
+                    {language === 'ar' ? 'حجم الأسطول / طبيعة النشاط' : 'Business Scale / Fleet Size'}
+                  </label>
                   <select
                     value={fleetSize}
                     onChange={(e) => setFleetSize(e.target.value)}
                     className="w-full py-2 px-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-cyan-400 cursor-pointer"
                   >
-                    <option value="1-5 Tankers">1 - 5 Tankers (Small Fleet)</option>
-                    <option value="6-20 Tankers">6 - 20 Tankers (Medium Fleet)</option>
-                    <option value="20+ Tankers">20+ Tankers (Enterprise Logistics)</option>
-                    <option value="Commercial Compound">Residential / Commercial Compound</option>
-                    <option value="Water Station Owner">Water Filling Station / Well Operator</option>
-                    <option value="Individual Client">Individual / Private Bulk Buyer</option>
+                    <option value="1-5 Tankers">{language === 'ar' ? '1 – 5 صهاريج (أسطول مصغر)' : '1 - 5 Tankers (Small Fleet)'}</option>
+                    <option value="6-20 Tankers">{language === 'ar' ? '6 – 20 صهريج (أسطول متوسط)' : '6 - 20 Tankers (Medium Fleet)'}</option>
+                    <option value="20+ Tankers">{language === 'ar' ? '20+ صهريج (مؤسسة لوجستية كبرى)' : '20+ Tankers (Enterprise Logistics)'}</option>
+                    <option value="Commercial Compound">{language === 'ar' ? 'مجمع سكني أو تجاري كبير' : 'Residential / Commercial Compound'}</option>
+                    <option value="Water Station Owner">{language === 'ar' ? 'مشغل محطة أشياب / بئر مياه' : 'Water Filling Station / Well Operator'}</option>
+                    <option value="Individual Client">{language === 'ar' ? 'طلب كميات مياه خاصة' : 'Individual / Private Bulk Buyer'}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Special Topic / Questions</label>
+                  <label className="block text-[11px] text-slate-400 mb-1">
+                    {language === 'ar' ? 'استفسارات محددة أو ملاحظات' : 'Special Topic / Questions'}
+                  </label>
                   <input
                     type="text"
-                    placeholder="e.g. ERP integration, pricing models..."
+                    placeholder={language === 'ar' ? 'مثال: الربط مع نظام المحاسبة، عقود توريد سنوية...' : 'e.g. ERP integration, pricing models...'}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     className="w-full py-2 px-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
@@ -374,7 +409,8 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                 <div className="text-[11px] text-slate-300 flex items-center gap-2">
                   <Mail className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span>
-                    Email Dispatch Destination: <strong className="text-cyan-300 font-mono">thenabaatankers@gmail.com</strong>
+                    {language === 'ar' ? 'إرسال إشعار فوري إلى:' : 'Email Dispatch Destination:'}{' '}
+                    <strong className="text-cyan-300 font-mono" dir="ltr">thenabaatankers@gmail.com</strong>
                   </span>
                 </div>
 
@@ -390,20 +426,14 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                     disabled={authConnecting}
                     className="px-2.5 py-1 rounded-lg text-[10px] font-bold text-white bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 flex items-center gap-1 cursor-pointer transition-colors"
                   >
-                    <svg className="w-3 h-3" viewBox="0 0 48 48">
-                      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-                      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-                    </svg>
-                    <span>{authConnecting ? 'Connecting...' : 'Connect Google for Direct API'}</span>
+                    <span>{authConnecting ? (language === 'ar' ? 'جارٍ الاتصال...' : 'Connecting...') : (language === 'ar' ? 'ربط حساب Google للإرسال المباشر' : 'Connect Google for Direct API')}</span>
                   </button>
                 )}
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="text-[10px] text-slate-500 font-mono">
-                  Direct helpline: <a href="tel:+966530434010" className="text-cyan-400 hover:underline">+966 53 043 4010</a> | WhatsApp: <a href="https://wa.me/923330717198" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">+92 333 0717198</a>
+                <div className="text-[10px] text-slate-500 font-mono" dir="ltr">
+                  Helpline: <a href="tel:+966530434010" className="text-cyan-400 hover:underline">+966 53 043 4010</a> | WhatsApp: <a href="https://wa.me/923330717198" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">+92 333 0717198</a>
                 </div>
 
                 <button
@@ -413,11 +443,11 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                   id="modal-confirm-booking-btn"
                 >
                   {isSubmitting ? (
-                    <span>Scheduling & Notifying...</span>
+                    <span>{language === 'ar' ? 'جارٍ حجز الموعد والإرسال...' : 'Scheduling & Notifying...'}</span>
                   ) : (
                     <>
-                      <span>Confirm Demo Booking</span>
-                      <ChevronRight className="w-4 h-4" />
+                      <span>{language === 'ar' ? 'تأكيد حجز العرض التوضيحي' : 'Confirm Demo Booking'}</span>
+                      <ChevronRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
                     </>
                   )}
                 </button>
@@ -434,13 +464,17 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
 
             <div className="space-y-2">
               <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest">
-                Meeting Confirmed #DEMO-7419
+                {language === 'ar' ? 'تم تأكيد الموعد #DEMO-7419' : 'Meeting Confirmed #DEMO-7419'}
               </span>
               <h3 className="text-xl sm:text-2xl font-bold text-white">
-                Demo Successfully Scheduled!
+                {language === 'ar' ? 'تم حجز العرض التوضيحي بنجاح!' : 'Demo Successfully Scheduled!'}
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto">
-                Thank you, <strong className="text-white">{fullName || 'there'}</strong>. We have sent a calendar invitation and meeting link to <span className="text-cyan-300">{email || TARGET_GMAIL}</span>.
+                {language === 'ar' ? (
+                  <>شكراً لك، <strong className="text-white">{fullName || 'عزيزنا العميل'}</strong>. تم إرسال تفاصيل ورابط الاجتماع إلى بريدكم <span className="text-cyan-300">{email || TARGET_GMAIL}</span>.</>
+                ) : (
+                  <>Thank you, <strong className="text-white">{fullName || 'there'}</strong>. We have sent a calendar invitation and meeting link to <span className="text-cyan-300">{email || TARGET_GMAIL}</span>.</>
+                )}
               </p>
             </div>
 
@@ -475,26 +509,22 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
             </div>
 
             {/* Meeting Summary Card */}
-            <div className="max-w-md mx-auto p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-2.5 text-xs text-slate-300">
+            <div className={`max-w-md mx-auto p-4 rounded-2xl bg-slate-900/90 border border-slate-800 ${isRTL ? 'text-right' : 'text-left'} space-y-2.5 text-xs text-slate-300`}>
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-slate-400">Session Topic:</span>
+                <span className="text-slate-400">{language === 'ar' ? 'موضوع الجلسة:' : 'Session Topic:'}</span>
                 <span className="font-semibold text-white">
                   {demoTypes.find(d => d.id === demoType)?.title}
                 </span>
               </div>
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-slate-400">Scheduled Time:</span>
+                <span className="text-slate-400">{language === 'ar' ? 'الموعد المحدد:' : 'Scheduled Time:'}</span>
                 <span className="font-semibold text-cyan-300">{selectedDate}</span>
               </div>
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-slate-400">Format:</span>
+                <span className="text-slate-400">{language === 'ar' ? 'طبيعة اللقاء:' : 'Format:'}</span>
                 <span className="font-semibold text-white">
-                  {meetingFormat === 'video' ? 'Google Meet Video Call' : meetingFormat === 'in-person' ? 'In-Person (Riyadh)' : 'Phone Call'}
+                  {meetingFormat === 'video' ? 'Google Meet Video Call' : meetingFormat === 'in-person' ? (language === 'ar' ? 'حضوري (مقر نبع بالرياض)' : 'In-Person (Riyadh)') : (language === 'ar' ? 'مكالمة هاتفية' : 'Phone Call')}
                 </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">Host:</span>
-                <span className="font-semibold text-white">The Nabaa Logistics Solution Specialist</span>
               </div>
             </div>
 
@@ -508,7 +538,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                   className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold text-cyan-300 bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-cyan-500/10"
                 >
                   <Mail className="w-4 h-4 text-cyan-400" />
-                  <span>Open in Gmail (to thenabaatankers@gmail.com)</span>
+                  <span>Open in Gmail</span>
                   <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
                 </a>
               )}
@@ -519,20 +549,20 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                 className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500/40 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Calendar className="w-4 h-4 text-cyan-400" />
-                <span>Add to Google Calendar</span>
+                <span>{language === 'ar' ? 'إضافة لتقويم Google' : 'Add to Google Calendar'}</span>
                 <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
               <button
                 type="button"
                 onClick={handleResetAndClose}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 transition-all cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 transition-all cursor-pointer font-bold"
               >
-                Done
+                {language === 'ar' ? 'تم' : 'Done'}
               </button>
             </div>
 
-            <div className="text-[11px] text-slate-300 font-mono flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-slate-800">
+            <div className="text-[11px] text-slate-300 font-mono flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-slate-800" dir="ltr">
               <span>Need immediate assistance?</span>
               <a
                 href="https://wa.me/923330717198?text=Hello%20The%20Nabaa%20Tankers"

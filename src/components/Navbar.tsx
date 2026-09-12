@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Droplets, Truck, Menu, X, ArrowRight, ChevronRight, Calendar, Phone, MessageCircle, Mail } from 'lucide-react';
+import { Droplets, Truck, Menu, X, ArrowRight, ChevronRight, Calendar, Phone, MessageCircle } from 'lucide-react';
 import { GmailIntegrationBadge } from './GmailIntegrationBadge';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { useLanguage } from '../context/LanguageContext';
 
 interface NavbarProps {
   onOpenOrderModal: () => void;
@@ -10,6 +12,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModal, onExploreClick }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t, isRTL, language } = useLanguage();
 
   const phoneDisplay = '+966 53 043 4010';
   const phoneTel = '+966530434010';
@@ -38,14 +41,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
   };
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Customer', href: '#customer-app' },
-    { name: 'Driver', href: '#driver-app' },
-    { name: 'Admin', href: '#admin-dashboard' },
-    { name: 'Tankers', href: '#tankers' },
-    { name: 'Features', href: '#features' },
-    { name: 'About', href: '#about' }
+    { name: t.nav.home, href: '#home' },
+    { name: t.nav.howItWorks, href: '#how-it-works' },
+    { name: t.nav.customer, href: '#customer-app' },
+    { name: t.nav.driver, href: '#driver-app' },
+    { name: t.nav.admin, href: '#admin-dashboard' },
+    { name: t.nav.tankers, href: '#tankers' },
+    { name: t.nav.features, href: '#features' },
+    { name: t.nav.about, href: '#about' }
   ];
 
   return (
@@ -55,8 +58,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-mono text-cyan-400 font-semibold">24/7 Operations & Dispatch:</span>
-            <span className="text-slate-400 hidden md:inline">Instant Water Tanker Logistics</span>
+            <span className="font-mono text-cyan-400 font-semibold">{t.topStrip.operations}</span>
+            <span className="text-slate-400 hidden md:inline">{t.topStrip.logistics}</span>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4 text-xs font-mono ml-auto">
@@ -70,8 +73,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
               title="Chat on WhatsApp"
             >
               <MessageCircle className="w-3.5 h-3.5 fill-emerald-400/20" />
-              <span className="text-slate-400 hidden sm:inline">WhatsApp:</span>
-              <span>{whatsappDisplay}</span>
+              <span className="text-slate-400 hidden sm:inline">{t.topStrip.whatsapp}</span>
+              <span dir="ltr">{whatsappDisplay}</span>
             </a>
 
             <span className="text-slate-700">|</span>
@@ -82,8 +85,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
               title="Direct Call Hotline"
             >
               <Phone className="w-3.5 h-3.5" />
-              <span className="text-slate-400 hidden sm:inline">Call:</span>
-              <span>{phoneDisplay}</span>
+              <span className="text-slate-400 hidden sm:inline">{t.topStrip.call}</span>
+              <span dir="ltr">{phoneDisplay}</span>
             </a>
           </div>
         </div>
@@ -107,44 +110,53 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-bold tracking-tight text-white font-display">The Nabaa</span>
-                <span className="text-xs px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-mono font-medium border border-cyan-500/20">Tankers</span>
+                <span className="text-xl font-bold tracking-tight text-white font-display">
+                  {language === 'ar' ? 'نبع' : 'The Nabaa'}
+                </span>
+                <span className="text-xs px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-mono font-medium border border-cyan-500/20">
+                  {language === 'ar' ? 'صهاريج مياه' : 'Tankers'}
+                </span>
               </div>
-              <span className="text-[10px] tracking-wider text-slate-400 uppercase font-medium">Digital Water Logistics</span>
+              <span className="text-[10px] tracking-wider text-slate-400 font-medium">
+                {language === 'ar' ? 'The Nabaa Tankers | لوجستيات المياه الذكية' : 'Digital Water Logistics'}
+              </span>
             </div>
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          <nav className="hidden xl:flex items-center gap-1 xl:gap-2">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 onClick={(e) => handleLinkClick(e, link.href)}
-                className="px-3 py-1.5 text-sm text-slate-300 hover:text-cyan-300 hover:bg-slate-800/50 rounded-lg transition-colors font-medium cursor-pointer"
+                className="px-2.5 py-1.5 text-sm text-slate-300 hover:text-cyan-300 hover:bg-slate-800/50 rounded-lg transition-colors font-medium cursor-pointer"
               >
                 {link.name}
               </a>
             ))}
           </nav>
 
-          {/* Action CTAs */}
-          <div className="hidden sm:flex items-center gap-2.5">
+          {/* Action CTAs + Language Switcher */}
+          <div className="hidden sm:flex items-center gap-2">
+            {/* Highly Visible Language Switcher: EN | العربية */}
+            <LanguageSwitcher />
+
             <button
               onClick={handleExplore}
-              className="px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-lg border border-slate-700/60 transition-colors cursor-pointer"
+              className="px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-lg border border-slate-700/60 transition-colors cursor-pointer"
               id="nav-explore-btn"
             >
-              Explore Platform
+              {t.nav.explore}
             </button>
             <button
               onClick={onOpenDemoModal}
-              className="px-3.5 py-2 text-xs font-semibold text-cyan-300 hover:text-white bg-cyan-500/10 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-cyan-500/10"
+              className="px-3 py-2 text-xs font-semibold text-cyan-300 hover:text-white bg-cyan-500/10 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-cyan-500/10"
               id="nav-book-demo-btn"
-              title="Schedule a live platform demo or consultation meeting"
+              title={t.nav.bookDemo}
             >
               <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Book Demo</span>
+              <span>{t.nav.bookDemo}</span>
             </button>
             <button
               onClick={onOpenOrderModal}
@@ -153,31 +165,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
             >
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-400 transition-all group-hover:brightness-110"></div>
               <span className="relative z-10 flex items-center gap-1.5">
-                Order Now
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                {t.nav.orderNow}
+                <ArrowRight className={`w-3.5 h-3.5 transition-transform ${isRTL ? 'rotate-180 group-hover:-translate-x-0.5' : 'group-hover:translate-x-0.5'}`} />
               </span>
             </button>
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle & Compact Controls */}
           <div className="flex sm:hidden items-center gap-1.5">
-            <button
-              onClick={onOpenDemoModal}
-              className="px-2.5 py-1.5 rounded-md text-xs font-semibold bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 flex items-center gap-1 cursor-pointer"
-              title="Book Demo"
-            >
-              <Calendar className="w-3 h-3 text-cyan-400" />
-              <span>Demo</span>
-            </button>
+            <LanguageSwitcher compact />
             <button
               onClick={onOpenOrderModal}
               className="px-2.5 py-1.5 rounded-md text-xs font-bold bg-cyan-500 text-slate-950 font-medium cursor-pointer"
             >
-              Order
+              {t.nav.orderNow}
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 focus:outline-none cursor-pointer"
+              aria-label={mobileMenuOpen ? t.nav.close : t.nav.menu}
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -188,6 +194,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="sm:hidden border-t border-slate-800 bg-[#071122]/95 backdrop-blur-2xl px-4 pt-3 pb-6 space-y-2 animate-in slide-in-from-top-4 duration-200">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <span className="text-xs text-slate-400">{isRTL ? 'اختر لغة العرض:' : 'Select Display Language:'}</span>
+            <LanguageSwitcher />
+          </div>
+
           <div className="grid grid-cols-2 gap-2 pb-2">
             {navLinks.map((link) => (
               <a
@@ -197,7 +208,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
                 className="px-3 py-2 text-sm text-slate-300 hover:text-cyan-300 hover:bg-slate-800/60 rounded-md font-medium flex items-center justify-between cursor-pointer"
               >
                 {link.name}
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                <ChevronRight className={`w-3.5 h-3.5 text-slate-500 ${isRTL ? 'rotate-180' : ''}`} />
               </a>
             ))}
           </div>
@@ -210,7 +221,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
               className="w-full py-2.5 text-center text-xs font-bold text-cyan-300 bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 rounded-lg flex items-center justify-center gap-2 cursor-pointer"
             >
               <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Book Demo / Schedule Meeting</span>
+              <span>{t.nav.bookDemo}</span>
             </button>
             <button
               onClick={() => {
@@ -219,7 +230,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
               }}
               className="w-full py-3 text-center text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg shadow-md shadow-cyan-500/20 cursor-pointer"
             >
-              Order Water Now (SAR)
+              {t.nav.orderNow}
             </button>
             <button
               onClick={() => {
@@ -228,26 +239,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
               }}
               className="w-full py-2.5 text-center text-xs font-semibold text-slate-300 bg-slate-800/80 rounded-lg border border-slate-700 cursor-pointer"
             >
-              Explore Connected Platform
+              {t.nav.explore}
             </button>
 
             {/* Direct Mobile Contact Buttons */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <a
                 href={whatsappLink}
-                target="_blank"
+                target="_blank" 
                 rel="noopener noreferrer"
                 className="py-2.5 px-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/25 text-xs font-semibold flex items-center justify-center gap-1.5"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
+                <span>{t.topStrip.whatsapp}</span>
               </a>
               <a
                 href={`tel:${phoneTel}`}
                 className="py-2.5 px-3 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/25 text-xs font-semibold flex items-center justify-center gap-1.5"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>Call Hotline</span>
+                <span>{t.topStrip.call}</span>
               </a>
             </div>
           </div>

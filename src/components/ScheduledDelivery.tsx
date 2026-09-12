@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, Clock, CheckCircle2, ChevronLeft, ChevronRight, Bell, Sparkles } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, CheckCircle2, Bell } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ScheduledDeliveryProps {
   onScheduleOrder?: () => void;
@@ -9,16 +10,29 @@ export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onSchedule
   const [selectedDay, setSelectedDay] = useState<string>('Tomorrow');
   const [selectedSlot, setSelectedSlot] = useState<string>('10:00 AM – 11:30 AM');
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const { t, isRTL, language } = useLanguage();
 
-  const days = [
-    { label: 'Today', date: 'Sept 10', sub: 'Urgent' },
-    { label: 'Tomorrow', date: 'Sept 11', sub: 'Recommended' },
-    { label: 'Friday', date: 'Sept 12', sub: 'Weekend' },
-    { label: 'Saturday', date: 'Sept 13', sub: 'Weekend' },
-    { label: 'Sunday', date: 'Sept 14', sub: 'Weekday' }
+  const days = language === 'ar' ? [
+    { label: 'اليوم', key: 'Today', date: '10 سبتمبر', sub: 'عاجل' },
+    { label: 'غداً', key: 'Tomorrow', date: '11 سبتمبر', sub: 'موصى به' },
+    { label: 'الجمعة', key: 'Friday', date: '12 سبتمبر', sub: 'عطلة' },
+    { label: 'السبت', key: 'Saturday', date: '13 سبتمبر', sub: 'عطلة' },
+    { label: 'الأحد', key: 'Sunday', date: '14 سبتمبر', sub: 'أسبوع عمل' }
+  ] : [
+    { label: 'Today', key: 'Today', date: 'Sept 10', sub: 'Urgent' },
+    { label: 'Tomorrow', key: 'Tomorrow', date: 'Sept 11', sub: 'Recommended' },
+    { label: 'Friday', key: 'Friday', date: 'Sept 12', sub: 'Weekend' },
+    { label: 'Saturday', key: 'Saturday', date: 'Sept 13', sub: 'Weekend' },
+    { label: 'Sunday', key: 'Sunday', date: 'Sept 14', sub: 'Weekday' }
   ];
 
-  const timeSlots = [
+  const timeSlots = language === 'ar' ? [
+    '07:00 ص – 08:30 ص',
+    '10:00 ص – 11:30 ص',
+    '01:30 م – 03:00 م',
+    '05:00 م – 06:30 م',
+    '08:00 م – 09:30 م'
+  ] : [
     '07:00 AM – 08:30 AM',
     '10:00 AM – 11:30 AM',
     '01:30 PM – 03:00 PM',
@@ -34,13 +48,15 @@ export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onSchedule
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider">
             <CalendarIcon className="w-3.5 h-3.5" />
-            <span>Planned Water Logistics</span>
+            <span>{language === 'ar' ? 'جدولة توريد المياه المسبقة' : 'Planned Water Logistics'}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight">
-            Schedule Water for Later
+            {language === 'ar' ? 'جدولة الصهريج لموعد لاحق' : 'Schedule Water for Later'}
           </h2>
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            Eliminate unexpected tank depletion. Schedule recurring or one-off tanker deliveries days in advance for compounds, villas, farms, and facilities.
+            {language === 'ar'
+              ? 'تخلص نهائياً من انقطاع المياه المفاجئ. جدول تعبئة صهريج المياه مسبقاً لموعد دوري أو محدد للفلل، المزارع، والمنشآت التجارية.'
+              : 'Eliminate unexpected tank depletion. Schedule recurring or one-off tanker deliveries days in advance for compounds, villas, farms, and facilities.'}
           </p>
         </div>
 
@@ -54,15 +70,15 @@ export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onSchedule
               {/* Date Pills */}
               <div>
                 <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-3">
-                  Select Delivery Day
+                  {language === 'ar' ? 'حدد يوم التوصيل' : 'Select Delivery Day'}
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {days.map((item) => {
-                    const isSelected = selectedDay === item.label;
+                    const isSelected = selectedDay === item.key;
                     return (
                       <button
-                        key={item.label}
-                        onClick={() => setSelectedDay(item.label)}
+                        key={item.key}
+                        onClick={() => setSelectedDay(item.key)}
                         className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-cyan-500 text-slate-950 font-bold border-cyan-400 shadow-md shadow-cyan-500/20'
@@ -80,23 +96,23 @@ export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onSchedule
               {/* Time Slots */}
               <div>
                 <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-3">
-                  Select Arrival Window
+                  {language === 'ar' ? 'حدد نافذة وصول الصهريج' : 'Select Arrival Window'}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {timeSlots.map((slot) => {
-                    const isSelected = selectedSlot === slot;
+                  {timeSlots.map((slot, sIdx) => {
+                    const isSelected = selectedSlot === slot || (sIdx === 1 && !selectedSlot.includes(slot));
                     return (
                       <button
                         key={slot}
                         onClick={() => setSelectedSlot(slot)}
-                        className={`px-3 py-2.5 rounded-xl border text-left text-xs font-mono transition-all cursor-pointer flex items-center justify-between ${
+                        className={`px-3 py-2.5 rounded-xl border text-xs font-mono transition-all cursor-pointer flex items-center justify-between ${isRTL ? 'text-right' : 'text-left'} ${
                           isSelected
                             ? 'bg-cyan-950/70 border-cyan-400 text-cyan-200 shadow-sm'
                             : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700'
                         }`}
                       >
                         <span>{slot}</span>
-                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />}
+                        {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
                       </button>
                     );
                   })}
@@ -113,12 +129,16 @@ export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onSchedule
                     {isRecurring && <CheckCircle2 className="w-3.5 h-3.5" />}
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-white">Make this a recurring delivery</div>
-                    <div className="text-[11px] text-slate-400">Repeats every week at selected window</div>
+                    <div className="text-xs font-bold text-white">
+                      {language === 'ar' ? 'تفعيل التوصيل الدوري التلقائي' : 'Make this a recurring delivery'}
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      {language === 'ar' ? 'يتكرر أسبوعياً في نفس الموعد دون الحاجة لإعادة الطلب' : 'Repeats every week at selected window'}
+                    </div>
                   </div>
                 </div>
                 <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">
-                  AUTO-DISPATCH
+                  {language === 'ar' ? 'توجيه آلي' : 'AUTO-DISPATCH'}
                 </span>
               </div>
             </div>
@@ -126,8 +146,12 @@ export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onSchedule
             {/* Right Column: Scheduled Order Summary Confirmation */}
             <div className="md:col-span-5 bg-[#071224] border border-cyan-500/30 rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="text-xs font-mono uppercase text-slate-400">Scheduled Booking</span>
-                <span className="text-xs font-bold text-cyan-400">Confirmed Slot</span>
+                <span className="text-xs font-mono uppercase text-slate-400">
+                  {language === 'ar' ? 'تأكيد الحجز المسبق' : 'Scheduled Booking'}
+                </span>
+                <span className="text-xs font-bold text-cyan-400">
+                  {language === 'ar' ? 'موعد مؤكد' : 'Confirmed Slot'}
+                </span>
               </div>
 
               <div className="space-y-3">
@@ -136,8 +160,10 @@ export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onSchedule
                     <CalendarIcon className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs text-slate-400">Date & Slot</div>
-                    <div className="text-sm font-bold text-white font-display">{selectedDay} • {selectedSlot.split('–')[0]}</div>
+                    <div className="text-xs text-slate-400">{language === 'ar' ? 'الموعد المحدد' : 'Date & Slot'}</div>
+                    <div className="text-sm font-bold text-white font-display">
+                      {days.find(d => d.key === selectedDay)?.label || selectedDay} • {selectedSlot.split('–')[0]}
+                    </div>
                   </div>
                 </div>
 
@@ -146,30 +172,36 @@ export const ScheduledDelivery: React.FC<ScheduledDeliveryProps> = ({ onSchedule
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs text-slate-400">Volume Selected</div>
-                    <div className="text-sm font-bold text-white font-display">19 Tons (19,000 L)</div>
+                    <div className="text-xs text-slate-400">{language === 'ar' ? 'سعة الصهريج' : 'Volume Selected'}</div>
+                    <div className="text-sm font-bold text-white font-display">
+                      {language === 'ar' ? '19 طن (19,000 لتر)' : '19 Tons (19,000 L)'}
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div className="pt-3 border-t border-slate-800/80 space-y-2 text-xs">
                 <div className="flex justify-between text-slate-400">
-                  <span>Tanker Baseline (19T)</span>
-                  <span className="font-mono text-white">200 SAR</span>
+                  <span>{language === 'ar' ? 'سعر الصهريج (19 طن)' : 'Tanker Baseline (19T)'}</span>
+                  <span className="font-mono text-white" dir="ltr">200 SAR</span>
                 </div>
                 <div className="flex justify-between text-cyan-400">
-                  <span>Advance Scheduling Fee</span>
-                  <span className="font-mono">FREE (0 SAR)</span>
+                  <span>{language === 'ar' ? 'رسوم الجدولة المسبقة' : 'Advance Scheduling Fee'}</span>
+                  <span className="font-mono">{language === 'ar' ? 'مجاناً (0 ر.س)' : 'FREE (0 SAR)'}</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800">
-                  <span>Total Due on Delivery</span>
-                  <span className="text-cyan-400 font-mono">200 SAR</span>
+                  <span>{language === 'ar' ? 'الإجمالي عند التوصيل' : 'Total Due on Delivery'}</span>
+                  <span className="text-cyan-400 font-mono" dir="ltr">200 SAR</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/20 flex items-center gap-2 text-xs text-cyan-300">
                 <Bell className="w-4 h-4 text-cyan-400 shrink-0" />
-                <span>You will receive an automated SMS & notification 30 mins before dispatch.</span>
+                <span>
+                  {language === 'ar'
+                    ? 'ستصلك رسالة وإشعار فوري قبل 30 دقيقة من تحرك الصهريج لموقعك.'
+                    : 'You will receive an automated SMS & notification 30 mins before dispatch.'}
+                </span>
               </div>
             </div>
 

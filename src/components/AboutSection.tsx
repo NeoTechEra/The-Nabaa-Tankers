@@ -1,7 +1,10 @@
 import React from 'react';
-import { Droplets, Shield, Compass, Sparkles, Building2, CheckCircle2 } from 'lucide-react';
+import { Droplets, Shield, Compass, Sparkles } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export const AboutSection: React.FC = () => {
+  const { t, isRTL, language } = useLanguage();
+
   return (
     <section id="about" className="py-20 lg:py-28 relative bg-[#060c18] overflow-hidden">
       
@@ -16,22 +19,32 @@ export const AboutSection: React.FC = () => {
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider">
               <Droplets className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Our Vision</span>
+              <span>{language === 'ar' ? 'رؤيتنا ورسالتنا' : 'Our Vision'}</span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight leading-tight">
-              Water Delivery, Reimagined for the Digital Era.
+              {language === 'ar'
+                ? 'إعادة ابتكار قطاع نقل وتوريد المياه للعصر الرقمي.'
+                : 'Water Delivery, Reimagined for the Digital Era.'}
             </h2>
 
             <div className="space-y-4 text-slate-300 text-base leading-relaxed">
               <p>
-                The Nabaa is built around a simple idea: <strong>make water delivery as easy to order and manage as any modern digital service</strong>.
+                {language === 'ar' ? (
+                  <>انطلقت منصة <strong>نبع</strong> من فكرة واضحة: <strong>جعل طلب وإدارة صهاريج مياه الشرب سهلاً وموثوقاً تماماً كتطبيقات التوصيل الحديثة</strong>.</>
+                ) : (
+                  <>The Nabaa is built around a simple idea: <strong>make water delivery as easy to order and manage as any modern digital service</strong>.</>
+                )}
               </p>
               <p>
-                In many markets, commercial and residential water delivery still relies heavily on informal phone calls, uncertain arrival times, manual dispatch notebooks, and paper receipts.
+                {language === 'ar'
+                  ? 'في العديد من المدن، لا يزال توريد المياه للمنازل والمزارع والمشاريع يعتمد على الاتصالات الهاتفية العشوائية، والمواعيد غير المحددة، والسجلات الورقية المشتتة.'
+                  : 'In many markets, commercial and residential water delivery still relies heavily on informal phone calls, uncertain arrival times, manual dispatch notebooks, and paper receipts.'}
               </p>
               <p>
-                Instead of relying entirely on phone calls, manual dispatching, and disconnected records, The Nabaa creates a connected digital workflow between customers, drivers, fleet operators, and administrators.
+                {language === 'ar'
+                  ? 'بدلاً من الانتظار المرهق والغموض، تصنع نبع منظومة رقمية مترابطة تجمع طالبي المياه، وسائقي الصهاريج، ومشغلي الأساطيل، وغرفة العمليات المركزية في منصة ذكية موحدة.'
+                  : 'Instead of relying entirely on phone calls, manual dispatching, and disconnected records, The Nabaa creates a connected digital workflow between customers, drivers, fleet operators, and administrators.'}
               </p>
             </div>
 
@@ -41,8 +54,12 @@ export const AboutSection: React.FC = () => {
                   <Shield className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white font-display">Logistical Integrity</h4>
-                  <p className="text-xs text-slate-400">Strict tanker compliance checks and verifiable offloading meters.</p>
+                  <h4 className="text-sm font-bold text-white font-display">
+                    {language === 'ar' ? 'الموثوقية والامتثال' : 'Logistical Integrity'}
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    {language === 'ar' ? 'فحص شهادات نظافة الخزانات وجودة المياه الصالحة للشرب وتوثيق عمليات التفريغ.' : 'Strict tanker compliance checks and verifiable offloading meters.'}
+                  </p>
                 </div>
               </div>
 
@@ -51,8 +68,12 @@ export const AboutSection: React.FC = () => {
                   <Compass className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white font-display">Intelligent Routing</h4>
-                  <p className="text-xs text-slate-400">Algorithms adapted for heavy vehicle weight restrictions and urban access gates.</p>
+                  <h4 className="text-sm font-bold text-white font-display">
+                    {language === 'ar' ? 'توجيه وملاحة ذكية' : 'Intelligent Routing'}
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    {language === 'ar' ? 'خوارزميات ملاحة تأخذ بالحسبان أوزان الشاحنات وأوقات الذروة والمداخل السكنية.' : 'Algorithms adapted for heavy vehicle weight restrictions and urban access gates.'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -63,7 +84,7 @@ export const AboutSection: React.FC = () => {
             <div className="p-8 rounded-3xl bg-gradient-to-b from-[#091730] to-[#070e1c] border border-cyan-500/30 shadow-2xl backdrop-blur-xl relative">
               <div className="text-xs font-mono uppercase text-cyan-400 tracking-wider mb-6 flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
-                <span>The Connected Triad</span>
+                <span>{language === 'ar' ? 'أركان المنظومة الثلاثية المتصلة' : 'The Connected Triad'}</span>
               </div>
 
               <div className="space-y-4">
@@ -72,8 +93,12 @@ export const AboutSection: React.FC = () => {
                     01
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white font-display">Customer Mobile Interface</div>
-                    <div className="text-xs text-slate-400">Frictionless OTP login, live radar tracking, transparent SAR pricing.</div>
+                    <div className="text-sm font-bold text-white font-display">
+                      {language === 'ar' ? 'تطبيق العميل للهواتف الذكية' : 'Customer Mobile Interface'}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      {language === 'ar' ? 'تسجيل سريع برقم الجوال، تتبع حي على الرادار، وتسعير شفاف بالريال السعودي.' : 'Frictionless OTP login, live radar tracking, transparent SAR pricing.'}
+                    </div>
                   </div>
                 </div>
 
@@ -82,8 +107,12 @@ export const AboutSection: React.FC = () => {
                     02
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white font-display">Driver & Fleet Mobile System</div>
-                    <div className="text-xs text-slate-400">Audio dispatch alerts, heavy tanker navigation, live earnings wallet.</div>
+                    <div className="text-sm font-bold text-white font-display">
+                      {language === 'ar' ? 'تطبيق السائق ومساعد الرحلة' : 'Driver & Fleet Mobile System'}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      {language === 'ar' ? 'تنبيهات صوتية فورية، ملاحة للشاحنات الكبيرة، ومحفظة رقمية لتحصيل الأرباح.' : 'Audio dispatch alerts, heavy tanker navigation, live earnings wallet.'}
+                    </div>
                   </div>
                 </div>
 
@@ -92,14 +121,18 @@ export const AboutSection: React.FC = () => {
                     03
                   </div>
                   <div>
-                    <div className="text-sm font-bold text-white font-display">Central Admin Operations Hub</div>
-                    <div className="text-xs text-slate-400">Order dispatch control, tanker certificate audits, and promotion rules.</div>
+                    <div className="text-sm font-bold text-white font-display">
+                      {language === 'ar' ? 'غرفة العمليات ولوحة التحكم المركزية' : 'Central Admin Operations Hub'}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      {language === 'ar' ? 'متابعة مسار التوصيل، فحص تصاريح الشاحنات، وإدارة العروض والتقارير.' : 'Order dispatch control, tanker certificate audits, and promotion rules.'}
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div className="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-400 text-center font-mono">
-                Engineered for Saudi Arabia & the Arabian Gulf
+                {language === 'ar' ? 'صُمم خصيصاً للمملكة العربية السعودية ودول الخليج العربي' : 'Engineered for Saudi Arabia & the Arabian Gulf'}
               </div>
             </div>
           </div>

@@ -1,8 +1,54 @@
 import React from 'react';
-import { CreditCard, Banknote, ShieldCheck, CheckCircle2, Lock, Smartphone } from 'lucide-react';
+import { CreditCard, Banknote, Lock, Smartphone } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export const PaymentsSection: React.FC = () => {
-  const paymentMethods = [
+  const { t, isRTL, language } = useLanguage();
+
+  const paymentMethods = language === 'ar' ? [
+    {
+      name: 'مدى (Mada)',
+      category: 'شبكة المدفوعات الوطنية السعودية',
+      icon: 'mada',
+      desc: 'دفع مباشر وفوري عبر بطاقات الخصم البنكية لجميع البنوك السعودية.',
+      status: 'متاح للربط'
+    },
+    {
+      name: 'أبل باي (Apple Pay)',
+      category: 'المحفظة الرقمية السريعة',
+      icon: 'apple',
+      desc: 'إتمام الطلب بلمسة واحدة أو بصمة الوجه لمستخدمي هواتف آيفون.',
+      status: 'متاح للربط'
+    },
+    {
+      name: 'فيزا (Visa)',
+      category: 'البطاقات الائتمانية والخصم',
+      icon: 'visa',
+      desc: 'معالجة آمنة ومعتمدة للبطاقات البنكية الدولية والمحلية.',
+      status: 'متاح للربط'
+    },
+    {
+      name: 'ماستركارد (Mastercard)',
+      category: 'البطاقات العالمية',
+      icon: 'mastercard',
+      desc: 'حماية وتوثيق إلكتروني ثلاثي الأبعاد 3D Secure فائق الأمان.',
+      status: 'متاح للربط'
+    },
+    {
+      name: 'جوجل باي (Google Pay)',
+      category: 'محفظة أندرويد الرقمية',
+      icon: 'google',
+      desc: 'دفع سريع بدون تلامس لمستخدمي أجهزة أندرويد وساعات Wear OS.',
+      status: 'متاح للربط'
+    },
+    {
+      name: 'الدفع عند الاستلام (كاش)',
+      category: 'تسوية نقدية فورية',
+      icon: 'cash',
+      desc: 'تسليم قيمة الطلب نقداً مباشرة للسائق بعد فحص وتفريغ مياه الصهريج.',
+      status: 'متاح للربط'
+    }
+  ] : [
     {
       name: 'Mada',
       category: 'Saudi National Debit',
@@ -55,13 +101,15 @@ export const PaymentsSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider">
             <CreditCard className="w-3.5 h-3.5" />
-            <span>Fintech Logistics</span>
+            <span>{language === 'ar' ? 'بوابة المدفوعات المالية والتقنية' : 'Fintech Logistics'}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight">
-            Simple, Flexible Payments
+            {language === 'ar' ? 'طرق دفع سهلة ومرنة تناسب الجميع' : 'Simple, Flexible Payments'}
           </h2>
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            Support for Saudi and GCC payment preferences. Configure digital rails, instant mobile wallets, and physical cash-on-delivery settlements.
+            {language === 'ar'
+              ? 'دعم كامل لخيارات الدفع المفضلة في المملكة ودول الخليج العربي: قنوات الدفع الإلكتروني، المحافظ الرقمية الفورية، أو الدفع نقداً عند الاستلام.'
+              : 'Support for Saudi and GCC payment preferences. Configure digital rails, instant mobile wallets, and physical cash-on-delivery settlements.'}
           </p>
         </div>
 
@@ -74,9 +122,9 @@ export const PaymentsSection: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition-transform">
-                  {method.name === 'Cash on Delivery' ? (
+                  {method.name.includes('Cash') || method.name.includes('كاش') ? (
                     <Banknote className="w-6 h-6 text-emerald-400" />
-                  ) : method.name === 'Apple Pay' || method.name === 'Google Pay' ? (
+                  ) : method.name.includes('Apple') || method.name.includes('Google') || method.name.includes('أبل') || method.name.includes('جوجل') ? (
                     <Smartphone className="w-6 h-6 text-cyan-400" />
                   ) : (
                     <CreditCard className="w-6 h-6 text-blue-400" />
@@ -98,7 +146,9 @@ export const PaymentsSection: React.FC = () => {
         <div className="max-w-2xl mx-auto p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center gap-3 text-xs text-slate-400">
           <Lock className="w-4 h-4 text-cyan-400 shrink-0" />
           <span>
-            Payment gateways and digital methods represent platform capabilities that can be enabled according to merchant account setup and regional banking compliance.
+            {language === 'ar'
+              ? 'بوابات وطرق الدفع الرقمية تمثل قدرات تقنية تدعمها المنصة وقابلة للتفعيل والربط مع الحسابات البنكية التجارية للمنشأة والامتثال المالي الإقليمي.'
+              : 'Payment gateways and digital methods represent platform capabilities that can be enabled according to merchant account setup and regional banking compliance.'}
           </span>
         </div>
 

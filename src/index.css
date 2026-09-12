@@ -2,8 +2,9 @@
 
 @layer base {
   :root {
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+    --font-arabic: 'Tajawal', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
   }
 
@@ -16,6 +17,42 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
   }
+
+  /* When document is in Arabic / RTL mode */
+  [dir="rtl"] {
+    font-family: var(--font-arabic);
+    letter-spacing: 0px !important;
+  }
+
+  [dir="rtl"] h1, 
+  [dir="rtl"] h2, 
+  [dir="rtl"] h3, 
+  [dir="rtl"] h4, 
+  [dir="rtl"] h5, 
+  [dir="rtl"] h6,
+  [dir="rtl"] .font-display {
+    font-family: var(--font-arabic) !important;
+    letter-spacing: normal !important;
+  }
+
+  [dir="rtl"] .font-sans {
+    font-family: var(--font-arabic) !important;
+  }
+
+  /* Ensure smooth rendering for connected Arabic glyphs */
+  [dir="rtl"] * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Directional flip utilities for Arabic */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .rtl-rotate-180 {
+  transform: rotate(180deg);
 }
 
 /* Custom scrollbar */

@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowRight, Play, ShieldCheck, MapPin, Navigation, Clock, Activity, Droplets, CheckCircle2, Radio, Truck, Calendar, Phone, MessageCircle } from 'lucide-react';
+import { ArrowRight, Droplets, Radio, Truck, Calendar, Phone, MessageCircle, MapPin, Navigation, Activity } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HeroProps {
   onOpenOrderModal: () => void;
@@ -8,6 +9,8 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, onExploreClick }) => {
+  const { t, isRTL, language } = useLanguage();
+
   const handleExplore = () => {
     if (onExploreClick) {
       onExploreClick();
@@ -15,6 +18,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
       document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
   return (
     <section id="home" className="relative pt-12 pb-24 lg:pt-20 lg:pb-32 overflow-hidden">
       {/* Background ambient lighting and water flow glow */}
@@ -27,47 +31,48 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
-          {/* Left Column: Headlines and Call to Actions */}
-          <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
+          {/* Main Column: Headlines and Call to Actions */}
+          <div className={`lg:col-span-6 space-y-6 text-center ${isRTL ? 'lg:text-right' : 'lg:text-left'}`}>
             {/* Platform Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider backdrop-blur-md shadow-sm shadow-cyan-500/10">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
               <Droplets className="w-3.5 h-3.5 text-cyan-400" />
-              <span>DIGITAL WATER DELIVERY PLATFORM</span>
+              <span>{t.brand.badge}</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight text-white font-display leading-[1.15]">
-              Water Delivery, <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400">
-                Reimagined.
-              </span>
+            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight text-white font-display leading-[1.2]">
+              {language === 'ar' ? (
+                <>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400">
+                    نعيد تعريف
+                  </span>{' '}
+                  توصيل المياه
+                </>
+              ) : (
+                <>
+                  Water Delivery, <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400">
+                    Reimagined.
+                  </span>
+                </>
+              )}
             </h1>
 
             {/* Supporting Copy */}
-            <p className="text-base sm:text-lg text-slate-300 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed">
-              The Nabaa connects customers, drivers, tankers, and operations through one intelligent water delivery platform. Order on-demand, schedule deliveries, and track your tanker in real time.
+            <p className={`text-base sm:text-lg text-slate-300 max-w-xl mx-auto ${isRTL ? 'lg:mr-0 lg:ml-auto' : 'lg:ml-0 lg:mr-auto'} font-normal leading-relaxed`}>
+              {t.hero.subheadline}
             </p>
 
             {/* Primary Action Buttons */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 flex-wrap">
+            <div className={`pt-2 flex flex-col sm:flex-row items-center justify-center ${isRTL ? 'lg:justify-start' : 'lg:justify-start'} gap-3 flex-wrap`}>
               <button
                 onClick={onOpenOrderModal}
                 className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-bold text-sm text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 shadow-xl shadow-cyan-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
                 id="hero-order-now-btn"
               >
-                <span>Order Now</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <button
-                onClick={onOpenDemoModal}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-semibold text-sm text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400 backdrop-blur-md transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan-950/40"
-                id="hero-book-demo-btn"
-                title="Book a live demo or meeting"
-              >
-                <Calendar className="w-4 h-4 text-cyan-400" />
-                <span>Book a Demo</span>
+                <span>{t.hero.orderNowBtn}</span>
+                <ArrowRight className={`w-4 h-4 transition-transform ${isRTL ? 'rotate-180 group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
               </button>
 
               <button
@@ -76,20 +81,31 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
                 id="hero-explore-btn"
               >
                 <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
-                <span>Explore Platform</span>
+                <span>{t.hero.exploreBtn}</span>
+              </button>
+
+              <button
+                onClick={onOpenDemoModal}
+                className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-semibold text-sm text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400 backdrop-blur-md transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-cyan-950/40"
+                id="hero-book-demo-btn"
+                title={t.hero.bookDemoBtn}
+              >
+                <Calendar className="w-4 h-4 text-cyan-400" />
+                <span>{t.hero.bookDemoBtn}</span>
               </button>
             </div>
 
             {/* Direct Phone & WhatsApp Instant Access Strip */}
-            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs font-mono text-slate-300">
+            <div className={`pt-2 flex flex-wrap items-center justify-center ${isRTL ? 'lg:justify-start' : 'lg:justify-start'} gap-4 text-xs font-mono text-slate-300`}>
               <span className="text-slate-400 flex items-center gap-1.5 font-sans font-medium">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Direct Inquiries & Fast Booking:
+                {isRTL ? 'حجز فوري ومباشر مع مركز التوجيه:' : 'Direct Inquiries & Fast Booking:'}
               </span>
               <a
                 href="tel:+966530434010"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 hover:text-white transition-all font-semibold"
                 id="hero-call-link"
+                dir="ltr"
               >
                 <Phone className="w-3.5 h-3.5 text-cyan-400" />
                 <span>+966 53 043 4010</span>
@@ -100,6 +116,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:text-white transition-all font-semibold"
                 id="hero-whatsapp-link"
+                dir="ltr"
               >
                 <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
                 <span>+92 333 0717198</span>
@@ -107,18 +124,30 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
             </div>
 
             {/* Platform Metrics Bar */}
-            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-slate-800/80 text-left">
+            <div className={`pt-6 grid grid-cols-3 gap-4 border-t border-slate-800/80 ${isRTL ? 'text-right' : 'text-left'}`}>
               <div>
-                <div className="text-2xl font-bold text-white font-display">10T – 32T</div>
-                <div className="text-xs text-slate-400">Tanker Capacity</div>
+                <div className="text-2xl font-bold text-white font-display">
+                  {language === 'ar' ? '10 – 32 طن' : '10T – 32T'}
+                </div>
+                <div className="text-xs text-slate-400">
+                  {language === 'ar' ? 'سعات الصهاريج' : 'Tanker Capacity'}
+                </div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-cyan-400 font-display">&lt; 15 min</div>
-                <div className="text-xs text-slate-400">Avg. Dispatch ETA</div>
+                <div className="text-2xl font-bold text-cyan-400 font-display">
+                  {language === 'ar' ? '18 دقيقة' : '< 18 min'}
+                </div>
+                <div className="text-xs text-slate-400">
+                  {language === 'ar' ? 'متوسط سرعة الوصول' : 'Avg. Dispatch ETA'}
+                </div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-white font-display">100% SAR</div>
-                <div className="text-xs text-slate-400">Digital Tracking</div>
+                <div className="text-2xl font-bold text-white font-display">
+                  {language === 'ar' ? '100% رقمي' : '100% SAR'}
+                </div>
+                <div className="text-xs text-slate-400">
+                  {language === 'ar' ? 'تتبع ودفع إلكتروني' : 'Digital Tracking'}
+                </div>
               </div>
             </div>
           </div>
@@ -143,11 +172,13 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                     </span>
-                    <span className="text-xs font-mono font-medium text-emerald-400 uppercase">Live Fleet Active</span>
+                    <span className="text-xs font-mono font-medium text-emerald-400 uppercase">
+                      {isRTL ? 'الأسطول متصل ونشط' : 'Live Fleet Active'}
+                    </span>
                   </div>
                   <div className="text-xs font-mono text-slate-400 flex items-center gap-1.5">
                     <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Telemetry Sync #NB-9481</span>
+                    <span>{isRTL ? 'تزامن لحظي #NB-9481' : 'Telemetry Sync #NB-9481'}</span>
                   </div>
                 </div>
 
@@ -159,8 +190,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
                       <Truck className="w-4 h-4 text-cyan-300" />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[10px] text-slate-400 uppercase font-medium">Assigned Driver</div>
-                      <div className="text-xs font-bold text-cyan-300 truncate">Tariq • Tanker #402</div>
+                      <div className="text-[10px] text-slate-400 uppercase font-medium">
+                        {isRTL ? 'السائق المعين' : 'Assigned Driver'}
+                      </div>
+                      <div className="text-xs font-bold text-cyan-300 truncate">
+                        {isRTL ? 'الكابتن طارق • صهريج #402' : 'Tariq • Tanker #402'}
+                      </div>
                     </div>
                   </div>
 
@@ -170,22 +205,23 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
                       <MapPin className="w-4 h-4 text-cyan-400" />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[10px] text-slate-400 uppercase font-medium">Customer Order</div>
-                      <div className="text-xs font-bold text-white truncate">Al-Malqa Villa #14</div>
+                      <div className="text-[10px] text-slate-400 uppercase font-medium">
+                        {isRTL ? 'طلب العميل' : 'Customer Order'}
+                      </div>
+                      <div className="text-xs font-bold text-white truncate">
+                        {isRTL ? 'فيلا حي الملقا #14' : 'Al-Malqa Villa #14'}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Center: Detailed Vector Tanker Graphic with Unobstructed Breathing Room */}
+                {/* Center: Detailed Vector Tanker Graphic */}
                 <div className="relative py-4 flex items-center justify-center">
-                  {/* Subtle animated water ripple ring behind tanker */}
                   <div className="absolute w-56 h-56 rounded-full border border-cyan-500/20 animate-ping opacity-20 pointer-events-none"></div>
                   <div className="absolute w-72 h-72 rounded-full border border-blue-500/10 pointer-events-none"></div>
 
-                  {/* High Quality Styled Water Tanker Vector Representation */}
                   <div className="relative w-full max-w-sm flex flex-col items-center group">
                     <div className="relative w-72 sm:w-80 h-36 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-3xl border border-cyan-400/30 p-4 shadow-xl flex items-center justify-between overflow-hidden">
-                      {/* Water liquid simulation inside tanker barrel */}
                       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-cyan-600/40 to-blue-500/10 rounded-b-2xl border-t border-cyan-400/40">
                         <div className="w-full h-2 bg-cyan-400/30 blur-[2px] animate-pulse"></div>
                       </div>
@@ -194,18 +230,21 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
                       <div className="relative z-10 flex flex-col">
                         <div className="flex items-center gap-1.5 text-cyan-300 font-display font-bold text-sm tracking-wider">
                           <Droplets className="w-4 h-4 text-cyan-400" />
-                          <span>THE NABAA</span>
+                          <span>{language === 'ar' ? 'نَبْع | THE NABAA' : 'THE NABAA'}</span>
                         </div>
-                        <span className="text-[11px] font-mono text-slate-300">POTABLE WATER DISPATCH</span>
+                        <span className="text-[11px] font-mono text-slate-300">
+                          {language === 'ar' ? 'صهريج مياه نقية صالحة للشرب' : 'POTABLE WATER DISPATCH'}
+                        </span>
                       </div>
 
                       <div className="relative z-10 text-right">
                         <span className="text-xl font-black font-display text-white">19T</span>
-                        <div className="text-[10px] text-cyan-300 font-mono">19,000 LITERS</div>
+                        <div className="text-[10px] text-cyan-300 font-mono">
+                          {language === 'ar' ? '19,000 لتر' : '19,000 LITERS'}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Truck chassis & wheels representation */}
                     <div className="w-64 sm:w-72 h-3 bg-slate-900 rounded-sm mt-1 flex justify-between px-4"></div>
                     <div className="w-68 sm:w-76 flex justify-between px-6 -mt-2">
                       <div className="w-7 h-7 rounded-full bg-slate-950 border-2 border-slate-700 shadow-inner flex items-center justify-center">
@@ -228,17 +267,23 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
                       <Navigation className="w-4 h-4 text-cyan-400 animate-pulse" />
                     </div>
                     <div>
-                      <div className="text-[11px] text-slate-400">Delivery Status</div>
+                      <div className="text-[11px] text-slate-400">
+                        {isRTL ? 'حالة التوصيل' : 'Delivery Status'}
+                      </div>
                       <div className="text-xs font-bold text-white flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-                        On the Way to Customer
+                        {isRTL ? 'السائق في الطريق إلى موقع الخزان' : 'On the Way to Customer'}
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-right shrink-0">
-                    <div className="text-[11px] text-slate-400">Estimated Arrival</div>
-                    <div className="text-sm font-extrabold text-cyan-300 font-mono">6 min (2.4 km)</div>
+                  <div className={`${isRTL ? 'text-left' : 'text-right'} shrink-0`}>
+                    <div className="text-[11px] text-slate-400">
+                      {isRTL ? 'الوقت المقدر' : 'Estimated Arrival'}
+                    </div>
+                    <div className="text-sm font-extrabold text-cyan-300 font-mono" dir="ltr">
+                      {isRTL ? '6 دقائق (2.4 كم)' : '6 min (2.4 km)'}
+                    </div>
                   </div>
                 </div>
 

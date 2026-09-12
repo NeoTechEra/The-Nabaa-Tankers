@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Truck, MapPin, Calendar, Clock, CreditCard, ShieldCheck, CheckCircle2, X, Droplets, ArrowRight, Phone, MessageCircle, Mail } from 'lucide-react';
-import { TANKER_MODELS, PROMO_CODES } from '../data/mockData';
+import { Truck, MapPin, CheckCircle2, X, Droplets, ArrowRight, Phone, MessageCircle, Mail } from 'lucide-react';
+import { TANKER_MODELS } from '../data/mockData';
 import { notifyNabaaBooking, TARGET_GMAIL } from '../services/gmail';
+import { useLanguage } from '../context/LanguageContext';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
   const [step, setStep] = useState<'details' | 'dispatching' | 'confirmed'>('details');
   const [gmailNotified, setGmailNotified] = useState<boolean>(false);
   const [composeUrl, setComposeUrl] = useState<string>('');
+  const { t, isRTL, language } = useLanguage();
 
   const phoneDisplay = '+966 53 043 4010';
   const phoneTel = '+966530434010';
@@ -66,7 +68,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
         {/* Close Button */}
         <button
           onClick={handleReset}
-          className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 cursor-pointer z-10"
+          className={`absolute top-5 ${isRTL ? 'left-5' : 'right-5'} text-slate-400 hover:text-white p-2 cursor-pointer z-10`}
         >
           <X className="w-5 h-5" />
         </button>
@@ -76,18 +78,22 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 text-xs font-semibold uppercase tracking-wider border border-cyan-800 mb-2">
                 <Droplets className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Simulated Order Dispatch</span>
+                <span>{language === 'ar' ? 'نموذج إرسال الطلب الفوري' : 'Simulated Order Dispatch'}</span>
               </div>
-              <h3 className="text-2xl font-bold text-white font-display">Order Potable Water Tanker</h3>
+              <h3 className="text-2xl font-bold text-white font-display">
+                {language === 'ar' ? 'طلب صهريج مياه نقية صالحة للشرب' : 'Order Potable Water Tanker'}
+              </h3>
               <p className="text-xs text-slate-300 mt-1">
-                Select your tanker capacity and dispatch preference for Riyadh & central districts.
+                {language === 'ar'
+                  ? 'اختر سعة الصهريج وموعد التوصيل وتفاصيل الخزان لمناطق الرياض والمناطق المحيطة.'
+                  : 'Select your tanker capacity and dispatch preference for Riyadh & central districts.'}
               </p>
             </div>
 
             {/* Tanker Selection */}
             <div>
               <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-2">
-                1. Select Tanker Capacity
+                {language === 'ar' ? '1. اختر سعة الصهريج' : '1. Select Tanker Capacity'}
               </label>
               <div className="grid grid-cols-3 gap-2.5">
                 {TANKER_MODELS.map((t) => (
@@ -95,15 +101,19 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
                     key={t.id}
                     type="button"
                     onClick={() => setSelectedTanker(t.id)}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`p-3 rounded-2xl border ${isRTL ? 'text-right' : 'text-left'} transition-all cursor-pointer ${
                       selectedTanker === t.id
                         ? 'bg-cyan-950/80 border-cyan-400 text-white shadow-md shadow-cyan-500/20'
                         : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700'
                     }`}
                   >
-                    <div className="text-[11px] font-mono text-cyan-400 font-bold">{t.capacityTons} Tons</div>
-                    <div className="text-xs font-bold text-white font-display truncate mt-0.5">{t.name}</div>
-                    <div className="text-[11px] font-mono font-bold text-slate-200 mt-1">{t.priceSAR} SAR</div>
+                    <div className="text-[11px] font-mono text-cyan-400 font-bold">
+                      {language === 'ar' ? `${t.capacityTons} طن` : `${t.capacityTons} Tons`}
+                    </div>
+                    <div className="text-xs font-bold text-white font-display truncate mt-0.5">
+                      {language === 'ar' ? (t.capacityTons === 10 ? 'صهريج صغير' : t.capacityTons === 19 ? 'صهريج وسط' : 'صهريج كبير تريلا') : t.name}
+                    </div>
+                    <div className="text-[11px] font-mono font-bold text-slate-200 mt-1" dir="ltr">{t.priceSAR} SAR</div>
                   </button>
                 ))}
               </div>
@@ -112,7 +122,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
             {/* Immediate vs Scheduled */}
             <div>
               <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-2">
-                2. Delivery Timing
+                {language === 'ar' ? '2. وقت التوصيل' : '2. Delivery Timing'}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -124,7 +134,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
                       : 'bg-slate-900 text-slate-400 border border-slate-800'
                   }`}
                 >
-                  ⚡ Immediate Dispatch (15-30m)
+                  {language === 'ar' ? '⚡ توصيل فوري عاجل (15-30 د)' : '⚡ Immediate Dispatch (15-30m)'}
                 </button>
                 <button
                   type="button"
@@ -135,7 +145,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
                       : 'bg-slate-900 text-slate-400 border border-slate-800'
                   }`}
                 >
-                  📅 Schedule Ahead
+                  {language === 'ar' ? '📅 حجز مسبق مجدول' : '📅 Schedule Ahead'}
                 </button>
               </div>
             </div>
@@ -143,13 +153,16 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
             {/* Address & Hose specifications */}
             <div className="space-y-3 text-xs">
               <div>
-                <label className="text-slate-300 font-semibold block mb-1">Delivery Address</label>
+                <label className="text-slate-300 font-semibold block mb-1">
+                  {language === 'ar' ? 'عنوان التوصيل وموقع الخزان' : 'Delivery Address'}
+                </label>
                 <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white">
                   <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
                   <input
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
+                    placeholder={language === 'ar' ? 'حي الملقا، بوابة 2، خزان أرضي' : 'Al-Malqa Villa, Ground Tank Inlet'}
                     className="w-full bg-transparent border-none focus:outline-none text-xs text-white"
                   />
                 </div>
@@ -157,24 +170,29 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-slate-300 font-semibold block mb-1">Contact Mobile</label>
+                  <label className="text-slate-300 font-semibold block mb-1">
+                    {language === 'ar' ? 'رقم جوال العميل' : 'Contact Mobile'}
+                  </label>
                   <input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white font-mono"
+                    dir="ltr"
                   />
                 </div>
                 <div>
-                  <label className="text-slate-300 font-semibold block mb-1">Hose Requirement</label>
+                  <label className="text-slate-300 font-semibold block mb-1">
+                    {language === 'ar' ? 'طول الخرطوم المطلوب' : 'Hose Requirement'}
+                  </label>
                   <select
                     value={hoseRequirement}
                     onChange={(e) => setHoseRequirement(e.target.value)}
                     className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white"
                   >
-                    <option value="40m Standard Hose">40m Standard (Ground Tank)</option>
-                    <option value="50m High Reach">50m Extended (Roof Tank)</option>
-                    <option value="60m Industrial">60m Industrial Coupling</option>
+                    <option value="40m Standard Hose">{language === 'ar' ? '40 متر قياسي (خزان أرضي)' : '40m Standard (Ground Tank)'}</option>
+                    <option value="50m High Reach">{language === 'ar' ? '50 متر مرتفع (خزان علوي)' : '50m Extended (Roof Tank)'}</option>
+                    <option value="60m Industrial">{language === 'ar' ? '60 متر مزارع ومشاريع' : '60m Industrial Coupling'}</option>
                   </select>
                 </div>
               </div>
@@ -183,28 +201,28 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
             {/* Total & Action */}
             <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
               <div>
-                <div className="text-[11px] text-slate-400">Total Price</div>
-                <div className="text-2xl font-mono font-black text-white">{currentTanker.priceSAR} SAR</div>
+                <div className="text-[11px] text-slate-400">{language === 'ar' ? 'السعر الإجمالي' : 'Total Price'}</div>
+                <div className="text-2xl font-mono font-black text-white" dir="ltr">{currentTanker.priceSAR} SAR</div>
               </div>
               <button
                 type="button"
                 onClick={handleConfirmOrder}
                 className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-extrabold text-xs sm:text-sm shadow-lg shadow-cyan-500/25 cursor-pointer flex items-center gap-2"
               >
-                <span>Confirm & Dispatch</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>{language === 'ar' ? 'تأكيد وإرسال الصهريج' : 'Confirm & Dispatch'}</span>
+                <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
               </button>
             </div>
 
             <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[11px] text-slate-400 font-mono">
-              <span>Prefer calling directly?</span>
+              <span>{language === 'ar' ? 'تفضل الاتصال المباشر؟' : 'Prefer calling directly?'}</span>
               <div className="flex items-center gap-3">
-                <a href={`tel:${phoneTel}`} className="text-cyan-400 hover:underline flex items-center gap-1 font-semibold">
+                <a href={`tel:${phoneTel}`} className="text-cyan-400 hover:underline flex items-center gap-1 font-semibold" dir="ltr">
                   <Phone className="w-3 h-3" />
                   <span>{phoneDisplay}</span>
                 </a>
                 <span>•</span>
-                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline flex items-center gap-1 font-semibold">
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline flex items-center gap-1 font-semibold" dir="ltr">
                   <MessageCircle className="w-3 h-3" />
                   <span>{whatsappDisplay}</span>
                 </a>
@@ -222,9 +240,13 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-white font-display">Locating Nearest Available Tanker</h3>
+              <h3 className="text-xl font-bold text-white font-display">
+                {language === 'ar' ? 'جارٍ البحث عن أقرب صهريج متاح' : 'Locating Nearest Available Tanker'}
+              </h3>
               <p className="text-xs text-slate-300 mt-1">
-                Matching with verified {currentTanker.name} ({currentTanker.capacityTons}T) in your district radius...
+                {language === 'ar'
+                  ? `مطابقة الطلب مع صهريج مياه معتمد (${currentTanker.capacityTons} طن) في نطاق حيك السكني...`
+                  : `Matching with verified ${currentTanker.name} (${currentTanker.capacityTons}T) in your district radius...`}
               </p>
             </div>
           </div>
@@ -238,25 +260,29 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
 
             <div className="space-y-2">
               <span className="text-[10px] font-mono px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 uppercase font-bold">
-                Order #NB-9482 Confirmed
+                {language === 'ar' ? 'تم تأكيد الطلب #NB-9482' : 'Order #NB-9482 Confirmed'}
               </span>
-              <h3 className="text-2xl font-bold text-white font-display">Tanker Dispatched!</h3>
+              <h3 className="text-2xl font-bold text-white font-display">
+                {language === 'ar' ? 'تم توجيه صهريج المياه إليك!' : 'Tanker Dispatched!'}
+              </h3>
               <p className="text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
-                Driver <strong>Tariq Al-Mansoor (#402)</strong> has accepted your 19-ton delivery request and is en route.
+                {language === 'ar'
+                  ? 'السائق طارق المنصور (صهريج #402) قبل طلب التوصيل وهو في الطريق لموقعك الآن.'
+                  : 'Driver Tariq Al-Mansoor (#402) has accepted your 19-ton delivery request and is en route.'}
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs text-left space-y-2 max-w-sm mx-auto">
               <div className="flex justify-between">
-                <span className="text-slate-400">Estimated Arrival</span>
-                <span className="text-cyan-300 font-mono font-bold">18 Minutes</span>
+                <span className="text-slate-400">{language === 'ar' ? 'الوقت المتوقع للوصول' : 'Estimated Arrival'}</span>
+                <span className="text-cyan-300 font-mono font-bold">{language === 'ar' ? '18 دقيقة' : '18 Minutes'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Total Charged</span>
-                <span className="text-white font-mono font-bold">{currentTanker.priceSAR} SAR</span>
+                <span className="text-slate-400">{language === 'ar' ? 'الإجمالي المستحق' : 'Total Charged'}</span>
+                <span className="text-white font-mono font-bold" dir="ltr">{currentTanker.priceSAR} SAR</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Hose Reach</span>
+                <span className="text-slate-400">{language === 'ar' ? 'طول الخرطوم' : 'Hose Reach'}</span>
                 <span className="text-slate-300">{hoseRequirement}</span>
               </div>
             </div>
@@ -266,15 +292,15 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-cyan-300 text-xs font-semibold">
                   <Mail className="w-4 h-4 text-cyan-400" />
-                  <span>Operations Email Dispatched</span>
+                  <span>{language === 'ar' ? 'إرسال تفاصيل الطلب للإدارة' : 'Operations Email Dispatched'}</span>
                 </div>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  Dispatched
+                  {language === 'ar' ? 'تم الإرسال' : 'Dispatched'}
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 font-mono">
-                Order specs & address routed to <strong className="text-white">{TARGET_GMAIL}</strong>
+                {language === 'ar' ? 'تم توجيه تفاصيل الطلب والموقع إلى' : 'Order specs & address routed to'} <strong className="text-white">{TARGET_GMAIL}</strong>
               </p>
             </div>
 
@@ -287,16 +313,17 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
                   className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2"
                 >
                   <Mail className="w-4 h-4 text-cyan-400" />
-                  <span>Open in Gmail ({TARGET_GMAIL})</span>
+                  <span>Gmail ({TARGET_GMAIL})</span>
                 </a>
               )}
 
               <a
                 href={`tel:${phoneTel}`}
                 className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2"
+                dir="ltr"
               >
                 <Phone className="w-4 h-4" />
-                <span>Call Hotline ({phoneDisplay})</span>
+                <span>Call ({phoneDisplay})</span>
               </a>
 
               <a
@@ -304,16 +331,17 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center justify-center gap-2"
+                dir="ltr"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>WhatsApp ({whatsappDisplay})</span>
+                <span>WhatsApp</span>
               </a>
 
               <button
                 onClick={handleReset}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs cursor-pointer shadow-md shadow-cyan-500/20"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs cursor-pointer shadow-md shadow-cyan-500/20 font-bold"
               >
-                Back to Overview
+                {language === 'ar' ? 'العودة للرئيسية' : 'Back to Overview'}
               </button>
             </div>
           </div>
