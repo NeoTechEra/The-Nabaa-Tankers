@@ -538,7 +538,7 @@ export async function createDemoRequest(data: {
     console.warn('Firebase trigger email dispatch notice for customer (booking preserved):', custMailErr);
   }
 
-  // 4. Dispatch immediately via Resend backend API route (if RESEND_API_KEY is configured on server)
+  // 4. Dispatch immediately via Resend backend API route (if RESEND_API_KEY is configured on server or Vercel)
   try {
     fetch('/api/send-demo-email', {
       method: 'POST',
@@ -559,9 +559,20 @@ export async function createDemoRequest(data: {
           message: data.message,
         },
       }),
-    }).catch((apiErr) => {
-      console.warn('Resend server proxy dispatch notice:', apiErr);
-    });
+    })
+      .then(async (res) => {
+        const json = await res.json().catch(() => null);
+        if (!res.ok) {
+          console.warn('[Resend Server Notice]: HTTP', res.status, json);
+        } else if (json?.warning) {
+          console.warn('[Resend Setup Notice]:', json.warning);
+        } else {
+          console.log('[Resend Success]: Notification email sent successfully', json);
+        }
+      })
+      .catch((apiErr) => {
+        console.warn('Resend server proxy dispatch notice:', apiErr);
+      });
   } catch (err) {
     // Non-blocking
   }
@@ -686,7 +697,7 @@ export async function updateDemoRequestStatus(
       console.warn('Failed to queue confirmed email to mail collection:', e);
     }
 
-    // Trigger Resend confirmation email via server route
+    // Trigger Resend confirmation email via server route (Express or Vercel serverless)
     try {
       fetch('/api/send-demo-email', {
         method: 'POST',
@@ -702,7 +713,18 @@ export async function updateDemoRequestStatus(
             meetingLink: updates.meetingLink || existingDoc.meetingLink || '',
           },
         }),
-      }).catch((apiErr) => console.warn('Resend confirm proxy notice:', apiErr));
+      })
+        .then(async (res) => {
+          const json = await res.json().catch(() => null);
+          if (!res.ok) {
+            console.warn('[Resend Confirm Notice]: HTTP', res.status, json);
+          } else if (json?.warning) {
+            console.warn('[Resend Setup Notice]:', json.warning);
+          } else {
+            console.log('[Resend Success]: Confirmation email sent successfully', json);
+          }
+        })
+        .catch((apiErr) => console.warn('Resend confirm proxy notice:', apiErr));
     } catch (err) {
       // Non-blocking
     }
