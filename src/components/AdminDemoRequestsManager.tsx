@@ -57,7 +57,7 @@ export const AdminDemoRequestsManager: React.FC = () => {
             email: b.customerEmail,
             phone: b.customerPhone,
             country: b.details?.country || 'Saudi Arabia',
-            interestedIn: b.details?.topic || 'Full Platform Walkthrough',
+            interestedIn: b.details?.topic || 'Whole Platform Demo',
             preferredDate: b.details?.scheduledTime?.split(' at ')[0] || 'Tomorrow',
             preferredTime: b.details?.scheduledTime?.split(' at ')[1] || '11:00 AM (AST)',
             timezone: b.details?.timezone || 'Asia/Riyadh',
@@ -80,7 +80,7 @@ export const AdminDemoRequestsManager: React.FC = () => {
           email: b.customerEmail,
           phone: b.customerPhone,
           country: b.details?.country || 'Saudi Arabia',
-          interestedIn: b.details?.topic || 'Full Platform Walkthrough',
+          interestedIn: b.details?.topic || 'Whole Platform Demo',
           preferredDate: b.details?.scheduledTime?.split(' at ')[0] || 'Tomorrow',
           preferredTime: b.details?.scheduledTime?.split(' at ')[1] || '11:00 AM (AST)',
           timezone: b.details?.timezone || 'Asia/Riyadh',
@@ -148,9 +148,19 @@ export const AdminDemoRequestsManager: React.FC = () => {
           return false;
         }
 
-        // Interest Filter
-        if (interestFilter !== 'all' && req.interestedIn !== interestFilter) {
-          return false;
+        // Interest Filter (support both new and legacy topic names)
+        if (interestFilter !== 'all') {
+          if (interestFilter === 'Whole Platform Demo') {
+            if (req.interestedIn !== 'Whole Platform Demo' && req.interestedIn !== 'Full Platform Walkthrough') {
+              return false;
+            }
+          } else if (interestFilter === 'Admin & Fleet Management') {
+            if (req.interestedIn !== 'Admin & Fleet Management' && req.interestedIn !== 'Admin Dashboard' && req.interestedIn !== 'Fleet Management') {
+              return false;
+            }
+          } else if (req.interestedIn !== interestFilter) {
+            return false;
+          }
         }
 
         return true;
@@ -386,12 +396,10 @@ export const AdminDemoRequestsManager: React.FC = () => {
             className="py-2 px-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-cyan-400 cursor-pointer max-w-[170px] truncate"
           >
             <option value="all">{language === 'ar' ? 'كافة المواضيع' : 'All Topics'}</option>
-            <option value="Full Platform Walkthrough">Full Platform Walkthrough</option>
-            <option value="Customer App">Customer App</option>
-            <option value="Driver App">Driver App</option>
-            <option value="Admin Dashboard">Admin Dashboard</option>
-            <option value="Fleet Management">Fleet Management</option>
-            <option value="Business / Partnership">Business / Partnership</option>
+            <option value="Whole Platform Demo">{language === 'ar' ? 'استعراض المنظومة كاملة' : 'Whole Platform Demo'}</option>
+            <option value="Customer App">{language === 'ar' ? 'تطبيق العميل' : 'Customer App'}</option>
+            <option value="Driver App">{language === 'ar' ? 'تطبيق السائق' : 'Driver App'}</option>
+            <option value="Admin & Fleet Management">{language === 'ar' ? 'لوحة التحكم والأسطول' : 'Admin & Fleet Operations'}</option>
           </select>
 
           {/* Sort Order */}

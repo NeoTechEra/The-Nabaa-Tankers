@@ -22,7 +22,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [country, setCountry] = useState('Saudi Arabia');
-  const [interestedIn, setInterestedIn] = useState<string>('Full Platform Walkthrough');
+  const [interestedIn, setInterestedIn] = useState<string>('Whole Platform Demo');
   const [preferredDate, setPreferredDate] = useState<string>('');
   const [preferredTime, setPreferredTime] = useState<string>('11:00 AM (AST)');
   const [timezone, setTimezone] = useState<string>('Asia/Riyadh');
@@ -60,19 +60,15 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
   const todayIso = new Date().toISOString().split('T')[0];
 
   const interestOptions = language === 'ar' ? [
-    { id: 'Full Platform Walkthrough', label: 'استعراض المنظومة المتكاملة (العميل، السائق، العمليات)', desc: 'شامل لكافة واجهات وتطبيقات المنظومة' },
-    { id: 'Customer App', label: 'تطبيق العميل وحجز وتتبع الصهاريج', desc: 'تجربة الطلب، الدفع، ومؤشرات الجودة' },
-    { id: 'Driver App', label: 'تطبيق وملاحة السائقين وتوثيق التوصيل', desc: 'استلام الإرساليات، الخريطة، وإثبات التفريغ' },
-    { id: 'Admin Dashboard', label: 'لوحة التحكم المركزية وغرفة العمليات', desc: 'إدارة الطلبات، تسعير التعرفة، والتحليلات' },
-    { id: 'Fleet Management', label: 'إدارة أساطيل الصهاريج للملاك والمقاولين', desc: 'تتبع حركة الشاحنات وحسابات العمولات' },
-    { id: 'Business / Partnership', label: 'شراكات التوريد التجاري والمجمعات', desc: 'عقود دورية وربط تقني للشركات' },
+    { id: 'Whole Platform Demo', label: 'استعراض المنظومة كاملة (كافة التطبيقات)', desc: 'جولة مباشرة وشاملة: تطبيق العميل، تطبيق السائق، ولوحة التحكم والعمليات' },
+    { id: 'Customer App', label: 'تطبيق طلب وتتبع المياه (العميل)', desc: 'حجز الصهاريج، التتبع المباشر على الخريطة، والدفع الإلكتروني' },
+    { id: 'Driver App', label: 'تطبيق السائق وتوصيل المياه', desc: 'استلام الإرساليات، التوجيه الملاحي، وإثبات تفريغ المياه رقمياً' },
+    { id: 'Admin & Fleet Management', label: 'لوحة التحكم المركزية وإدارة الأسطول', desc: 'توزيع الإرساليات، مراقبة حركة الصهاريج، التسعير الديناميكي والتقارير' },
   ] : [
-    { id: 'Full Platform Walkthrough', label: 'Full Platform Walkthrough', desc: 'End-to-end sync: Customer, Driver, and Admin Operations' },
-    { id: 'Customer App', label: 'Customer Ordering & Telemetry App', desc: 'Instant dispatch, digital payments, and live water tracking' },
-    { id: 'Driver App', label: 'Driver App & Mission Telemetry', desc: 'Smart routing, electronic delivery receipts, and driver wallet' },
-    { id: 'Admin Dashboard', label: 'Admin Command Center & Dispatch Hub', desc: 'Real-time operations, tariff engine, and analytics' },
-    { id: 'Fleet Management', label: 'Fleet Operators & Tanker Telematics', desc: 'Multi-tanker fleet oversight, commission automation' },
-    { id: 'Business / Partnership', label: 'Commercial Contracts & Enterprise', desc: 'Compound bulk supply, SLA guarantees, and API integration' },
+    { id: 'Whole Platform Demo', label: 'Complete Platform Demo (Whole App)', desc: 'Full end-to-end walkthrough: Customer App, Driver App, and Admin Operations' },
+    { id: 'Customer App', label: 'Customer Water Ordering App', desc: 'Tanker booking, real-time GPS tracking, and digital payments' },
+    { id: 'Driver App', label: 'Driver Delivery App', desc: 'Mission dispatch, turn-by-turn routing, and delivery confirmation' },
+    { id: 'Admin & Fleet Management', label: 'Admin Dashboard & Fleet Operations', desc: 'Live dispatching, tanker tracking, tariffs, and operations reports' },
   ];
 
   const timeSlots = [
