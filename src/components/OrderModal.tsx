@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Truck, MapPin, CheckCircle2, X, Droplets, ArrowRight, Phone, MessageCircle, Mail } from 'lucide-react';
+import { Truck, MapPin, CheckCircle2, X, Droplets, ArrowRight, Phone, MessageCircle } from 'lucide-react';
 import { TANKER_MODELS } from '../data/mockData';
-import { notifyNabaaBooking, TARGET_GMAIL } from '../services/gmail';
+import { notifyNabaaBooking } from '../services/gmail';
 import { useLanguage } from '../context/LanguageContext';
 
 interface OrderModalProps {
@@ -287,36 +287,23 @@ export const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, presele
               </div>
             </div>
 
-            {/* Gmail Notification Status */}
+            {/* Operational Dispatch Status */}
             <div className="max-w-sm mx-auto p-3 rounded-2xl bg-[#08152e] border border-cyan-500/40 text-left space-y-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-cyan-300 text-xs font-semibold">
-                  <Mail className="w-4 h-4 text-cyan-400" />
-                  <span>{language === 'ar' ? 'إرسال تفاصيل الطلب للإدارة' : 'Operations Email Dispatched'}</span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>{language === 'ar' ? 'توجيه الطلب لمركز العمليات' : 'Dispatched to Fleet Operations'}</span>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  {language === 'ar' ? 'تم الإرسال' : 'Dispatched'}
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  {language === 'ar' ? 'تم الربط' : 'Active'}
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 font-mono">
-                {language === 'ar' ? 'تم توجيه تفاصيل الطلب والموقع إلى' : 'Order specs & address routed to'} <strong className="text-white">{TARGET_GMAIL}</strong>
+                {language === 'ar' ? 'تم تحويل موقع التوصيل ومواصفات الخزان تلقائياً لأقرب صهريج متاح.' : 'Delivery location & tank specs routed to the nearest operational tanker.'}
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-              {composeUrl && (
-                <a
-                  href={composeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2"
-                >
-                  <Mail className="w-4 h-4 text-cyan-400" />
-                  <span>Gmail ({TARGET_GMAIL})</span>
-                </a>
-              )}
-
               <a
                 href={`tel:${phoneTel}`}
                 className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-2"

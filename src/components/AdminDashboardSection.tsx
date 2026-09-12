@@ -15,12 +15,10 @@ import {
   Mail 
 } from 'lucide-react';
 import { SAMPLE_ADMIN_STATS, SAMPLE_ADMIN_ORDERS } from '../data/mockData';
-import { GmailIntegrationBadge } from './GmailIntegrationBadge';
-import { GmailInboxViewer } from './GmailInboxViewer';
 import { useLanguage } from '../context/LanguageContext';
 
 export const AdminDashboardSection: React.FC = () => {
-  const [activeAdminTab, setActiveAdminTab] = useState<'orders' | 'drivers' | 'tankers' | 'promotions' | 'commission' | 'analytics' | 'gmail_inbox'>('orders');
+  const [activeAdminTab, setActiveAdminTab] = useState<'orders' | 'drivers' | 'tankers' | 'promotions' | 'commission' | 'analytics'>('orders');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [orderFilter, setOrderFilter] = useState<'all' | 'Immediate' | 'Scheduled'>('all');
   const [commissionType, setCommissionType] = useState<'fixed' | 'percentage'>('fixed');
@@ -87,11 +85,6 @@ export const AdminDashboardSection: React.FC = () => {
                 <span>Sync: 11:42:18 AST</span>
               </div>
             </div>
-          </div>
-
-          {/* Operational Gmail Dispatch Notification Management */}
-          <div className="p-4 sm:p-5 border-b border-slate-800/90 bg-[#060e1e]">
-            <GmailIntegrationBadge />
           </div>
 
           {/* Top Real-Time KPI Metric Cards */}
@@ -165,7 +158,6 @@ export const AdminDashboardSection: React.FC = () => {
           <div className="px-6 py-3 border-b border-slate-800 bg-[#081326] flex flex-wrap gap-2">
             {[
               { id: 'orders', label: language === 'ar' ? 'مركز إدارة الطلبات' : '17. Live Order Center', icon: Activity },
-              { id: 'gmail_inbox', label: language === 'ar' ? 'بريد الإشعارات (thenabaatankers@gmail.com)' : '📧 Gmail Dispatch Hub', icon: Mail },
               { id: 'drivers', label: language === 'ar' ? 'إدارة السائقين' : '18. Driver Management', icon: Users },
               { id: 'tankers', label: language === 'ar' ? 'أسطول الصهاريج' : '19. Tanker Fleet', icon: Truck },
               { id: 'promotions', label: language === 'ar' ? 'العروض وأكواد الخصم' : '20-21. Promotions & Codes', icon: Tag },
@@ -670,13 +662,6 @@ export const AdminDashboardSection: React.FC = () => {
                 </div>
 
               </div>
-            </div>
-          )}
-
-          {/* TAB: Gmail Dispatch Hub */}
-          {activeAdminTab === 'gmail_inbox' && (
-            <div className="p-6 animate-in fade-in duration-200">
-              <GmailInboxViewer />
             </div>
           )}
 

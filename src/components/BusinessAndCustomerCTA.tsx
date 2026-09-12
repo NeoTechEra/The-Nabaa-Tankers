@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Droplets, Building2, ArrowRight, CheckCircle2, Phone, MessageCircle, Mail } from 'lucide-react';
-import { notifyNabaaBooking, TARGET_GMAIL } from '../services/gmail';
+import { Droplets, Building2, ArrowRight, CheckCircle2, Phone, MessageCircle } from 'lucide-react';
+import { notifyNabaaBooking } from '../services/gmail';
 import { useLanguage } from '../context/LanguageContext';
 
 interface BusinessAndCustomerCTAProps {
@@ -281,8 +281,8 @@ export const BusinessAndCustomerCTA: React.FC<BusinessAndCustomerCTAProps> = ({ 
                     : 'Thank you. Our fleet onboarding team will contact you to demonstrate central dispatch, tanker compliance management, and driver app provisioning.'}
                 </p>
                 <div className="max-w-sm mx-auto p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center gap-2 text-xs font-mono text-cyan-300">
-                  <Mail className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>{language === 'ar' ? 'تم إرسال إشعار فوري إلى:' : 'Notification sent to:'} <strong className="text-white">{TARGET_GMAIL}</strong></span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{language === 'ar' ? 'تم تسجيل الطلب وإرساله لمركز العمليات الرئيسي' : 'Registered and dispatched to central fleet operations'}</span>
                 </div>
                 <div className="text-xs text-slate-400 font-mono py-1" dir="ltr">
                   Direct Line: <a href={`tel:${phoneTel}`} className="text-cyan-400 hover:underline">{phoneDisplay}</a> | WhatsApp: <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">{whatsappDisplay}</a>

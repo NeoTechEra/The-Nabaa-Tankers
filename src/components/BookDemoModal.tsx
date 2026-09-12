@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   X, Calendar, Clock, Video, Building2, User, Mail, Phone, 
   CheckCircle2, ChevronRight, ExternalLink
 } from 'lucide-react';
-import { notifyNabaaBooking, TARGET_GMAIL } from '../services/gmail';
-import { initAuth, googleSignIn } from '../services/auth';
+import { notifyNabaaBooking } from '../services/gmail';
 import { useLanguage } from '../context/LanguageContext';
 
 interface BookDemoModalProps {
@@ -27,36 +26,6 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
   const [fleetSize, setFleetSize] = useState('6-20 Tankers');
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emailDispatched, setEmailDispatched] = useState<boolean>(false);
-  const [gmailApiSent, setGmailApiSent] = useState<boolean>(false);
-  const [composeUrl, setComposeUrl] = useState<string>('');
-  const [gmailMessageId, setGmailMessageId] = useState<string | undefined>();
-  const [hasGoogleAuth, setHasGoogleAuth] = useState<boolean>(false);
-  const [authConnecting, setAuthConnecting] = useState<boolean>(false);
-
-  useEffect(() => {
-    const unsub = initAuth(
-      (_user, token) => setHasGoogleAuth(!!token),
-      () => setHasGoogleAuth(false)
-    );
-    return () => {
-      if (typeof unsub === 'function') unsub();
-    };
-  }, []);
-
-  const handleConnectGoogle = async () => {
-    try {
-      setAuthConnecting(true);
-      const res = await googleSignIn();
-      if (res?.accessToken) {
-        setHasGoogleAuth(true);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setAuthConnecting(false);
-    }
-  };
 
   if (!isOpen) return null;
 
@@ -122,7 +91,7 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
     
     try {
       const selectedDemoObj = demoTypes.find(d => d.id === demoType);
-      const result = await notifyNabaaBooking({
+      await notifyNabaaBooking({
         bookingType: 'demo',
         senderName: fullName,
         senderEmail: email,
@@ -133,15 +102,8 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
         meetingFormat: meetingFormat === 'video' ? 'Google Meet Video Call' : meetingFormat === 'in-person' ? 'In-person meeting (Riyadh)' : 'Phone consultation',
         notes: notes ? `${notes} (Fleet: ${fleetSize})` : `Fleet: ${fleetSize}`,
       });
-
-      setEmailDispatched(true);
-      setGmailApiSent(result.sentViaGmailApi);
-      setComposeUrl(result.composeUrl);
-      setGmailMessageId(result.messageId);
     } catch (err) {
-      console.error('Failed to dispatch booking email notification:', err);
-      setEmailDispatched(true);
-      setGmailApiSent(false);
+      console.error('Failed to dispatch booking notification:', err);
     } finally {
       setIsSubmitting(false);
       setStep('success');
@@ -407,28 +369,14 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
             <div className="pt-3 border-t border-slate-800 flex flex-col gap-3">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
                 <div className="text-[11px] text-slate-300 flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span>
-                    {language === 'ar' ? 'إرسال إشعار فوري إلى:' : 'Email Dispatch Destination:'}{' '}
-                    <strong className="text-cyan-300 font-mono" dir="ltr">thenabaatankers@gmail.com</strong>
+                    {language === 'ar' ? 'سيتم إرسال رابط الاجتماع والتأكيد إلى بريدكم المسجل مباشرة.' : 'Meeting link and instant confirmation will be sent to your registered email.'}
                   </span>
                 </div>
-
-                {hasGoogleAuth ? (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-emerald-300 bg-emerald-950 border border-emerald-800 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                    Gmail API Ready
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleConnectGoogle}
-                    disabled={authConnecting}
-                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold text-white bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 flex items-center gap-1 cursor-pointer transition-colors"
-                  >
-                    <span>{authConnecting ? (language === 'ar' ? 'جارٍ الاتصال...' : 'Connecting...') : (language === 'ar' ? 'ربط حساب Google للإرسال المباشر' : 'Connect Google for Direct API')}</span>
-                  </button>
-                )}
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-cyan-300 bg-cyan-950 border border-cyan-800 shrink-0">
+                  {language === 'ar' ? 'تأكيد فوري' : 'Instant Confirmation'}
+                </span>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -471,39 +419,9 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto">
                 {language === 'ar' ? (
-                  <>شكراً لك، <strong className="text-white">{fullName || 'عزيزنا العميل'}</strong>. تم إرسال تفاصيل ورابط الاجتماع إلى بريدكم <span className="text-cyan-300">{email || TARGET_GMAIL}</span>.</>
+                  <>شكراً لك، <strong className="text-white">{fullName || 'عزيزنا العميل'}</strong>. تم إرسال تفاصيل ورابط الاجتماع إلى بريدكم <span className="text-cyan-300 font-mono">{email || 'المسجل'}</span>.</>
                 ) : (
-                  <>Thank you, <strong className="text-white">{fullName || 'there'}</strong>. We have sent a calendar invitation and meeting link to <span className="text-cyan-300">{email || TARGET_GMAIL}</span>.</>
-                )}
-              </p>
-            </div>
-
-            {/* Real-Time Gmail Dispatch Notification Confirmation */}
-            <div className="max-w-md mx-auto p-4 rounded-2xl bg-[#08152e] border border-cyan-500/40 text-left space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-cyan-300 text-xs font-semibold">
-                  <Mail className="w-4 h-4 text-cyan-400" />
-                  <span>Target Inbox: <strong className="text-white font-mono">{TARGET_GMAIL}</strong></span>
-                </div>
-                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border flex items-center gap-1 ${
-                  gmailApiSent 
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
-                    : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
-                }`}>
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                  {gmailApiSent ? 'Dispatched via Gmail API' : 'Logged & Ready to Dispatch'}
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-300 font-mono">
-                {gmailApiSent ? (
-                  <>
-                    Notification successfully transmitted to <strong className="text-white">{TARGET_GMAIL}</strong>.
-                    {gmailMessageId && <span className="block text-[10px] text-slate-400 mt-0.5">Gmail Message ID: #{gmailMessageId}</span>}
-                  </>
-                ) : (
-                  <>
-                    Booking logged for <strong className="text-white">{TARGET_GMAIL}</strong>. You can view it in the Admin Gmail Hub or click "Open in Gmail" below to send instantly.
-                  </>
+                  <>Thank you, <strong className="text-white">{fullName || 'there'}</strong>. We have sent the meeting link and agenda to <span className="text-cyan-300 font-mono">{email || 'your email'}</span>.</>
                 )}
               </p>
             </div>
@@ -530,35 +448,21 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
 
             {/* Quick Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-              {composeUrl && (
-                <a
-                  href={composeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold text-cyan-300 bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/50 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-cyan-500/10"
-                >
-                  <Mail className="w-4 h-4 text-cyan-400" />
-                  <span>Open in Gmail</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                </a>
-              )}
-
               <button
                 type="button"
                 onClick={handleAddToCalendar}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500/40 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-cyan-500/40 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Calendar className="w-4 h-4 text-cyan-400" />
-                <span>{language === 'ar' ? 'إضافة لتقويم Google' : 'Add to Google Calendar'}</span>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                <span>{language === 'ar' ? 'إضافة إلى تقويم Google' : 'Add to Google Calendar'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleResetAndClose}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 transition-all cursor-pointer font-bold"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 transition-all cursor-pointer font-bold"
               >
-                {language === 'ar' ? 'تم' : 'Done'}
+                {language === 'ar' ? 'تم، إغلاق النافذة' : 'Done & Close'}
               </button>
             </div>
 

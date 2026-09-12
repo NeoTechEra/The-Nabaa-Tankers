@@ -1056,7 +1056,7 @@ export const translations: Record<Language, Translations> = {
       dispatchingDesc: 'Assigning nearest verified driver with requested tanker capacity.',
       confirmedTitle: 'Tanker Dispatched Successfully!',
       confirmedDesc: 'Your booking has been registered and dispatched. Driver details and ETA are being sent via SMS and Email.',
-      openGmailBtn: 'Open in Gmail (thenabaatankers@gmail.com)',
+      openGmailBtn: 'Open in Email App',
       closeBtn: 'Close'
     },
     demoModal: {
@@ -1618,7 +1618,7 @@ export const translations: Record<Language, Translations> = {
       dispatchingDesc: 'يتم الآن تعيين أقرب سائق معتمد بالسعة المطلوبة لموقع خزانك.',
       confirmedTitle: 'تم توجيه صهريج المياه بنجاح!',
       confirmedDesc: 'تم تسجيل طلبك وتوجيه الصهريج. ستصلك بيانات السائق ووقت الوصول التقديري عبر رسالة نصية وبريد إلكتروني.',
-      openGmailBtn: 'فتح في Gmail (thenabaatankers@gmail.com)',
+      openGmailBtn: 'فتح في تطبيق البريد',
       closeBtn: 'إغلاق'
     },
     demoModal: {

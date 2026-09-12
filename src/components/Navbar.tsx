@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Droplets, Truck, Menu, X, ArrowRight, ChevronRight, Calendar, Phone, MessageCircle } from 'lucide-react';
-import { GmailIntegrationBadge } from './GmailIntegrationBadge';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -54,8 +53,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4 text-xs font-mono ml-auto">
-            <GmailIntegrationBadge compact />
-            <span className="text-slate-700 hidden sm:inline">|</span>
             <a 
               href={whatsappLink}
               target="_blank" 
