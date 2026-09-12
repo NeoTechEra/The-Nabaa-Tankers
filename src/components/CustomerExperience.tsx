@@ -56,7 +56,7 @@ export const CustomerExperience: React.FC<CustomerExperienceProps> = ({ onSelect
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
+        <div className="text-center max-w-5xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider">
             <Smartphone className="w-3.5 h-3.5" />
             <span>{t.customerExperience.tag}</span>
@@ -64,42 +64,44 @@ export const CustomerExperience: React.FC<CustomerExperienceProps> = ({ onSelect
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight">
             {t.customerExperience.title}
           </h2>
-          <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
+          <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
             {t.customerExperience.subtitle}
           </p>
 
-          {/* Interactive Step Switcher */}
-          <div className="inline-flex p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-inner flex-wrap justify-center gap-1">
-            <button
-              onClick={() => setActiveStep(1)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                activeStep === 1
-                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              {t.customerExperience.steps.step1.title}
-            </button>
-            <button
-              onClick={() => setActiveStep(2)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                activeStep === 2
-                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              {t.customerExperience.steps.step2.title}
-            </button>
-            <button
-              onClick={() => setActiveStep(3)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                activeStep === 3
-                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              {t.customerExperience.steps.step3.title}
-            </button>
+          {/* Interactive Step Switcher - strictly formatted in one line with extended width */}
+          <div className="pt-2 flex justify-center w-full">
+            <div className="inline-flex items-center p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-inner max-w-full overflow-x-auto no-scrollbar gap-1.5 sm:gap-2">
+              <button
+                onClick={() => setActiveStep(1)}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeStep === 1
+                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {t.customerExperience.steps.step1.title}
+              </button>
+              <button
+                onClick={() => setActiveStep(2)}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeStep === 2
+                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {t.customerExperience.steps.step2.title}
+              </button>
+              <button
+                onClick={() => setActiveStep(3)}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeStep === 3
+                    ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {t.customerExperience.steps.step3.title}
+              </button>
+            </div>
           </div>
         </div>
 
