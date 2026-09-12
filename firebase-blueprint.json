@@ -1,0 +1,182 @@
+{
+  "entities": {
+    "DemoRequest": {
+      "title": "DemoRequest",
+      "description": "A scheduled or requested platform demonstration from a prospective client or fleet partner.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique human-readable identifier (e.g., DEMO-7419)",
+          "pattern": "^DEMO-[0-9]{4,6}$",
+          "maxLength": 32
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the contact person",
+          "maxLength": 100
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Company, establishment or fleet entity name",
+          "maxLength": 150
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Work or business email address",
+          "maxLength": 150
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number with international country dialing code",
+          "maxLength": 30
+        },
+        "country": {
+          "type": "string",
+          "description": "Country of operation (e.g., Saudi Arabia)",
+          "maxLength": 100
+        },
+        "interestedIn": {
+          "type": "string",
+          "description": "Platform feature or product of primary interest",
+          "enum": [
+            "Full Platform Walkthrough",
+            "Customer App",
+            "Driver App",
+            "Admin Dashboard",
+            "Fleet Management",
+            "Business / Partnership"
+          ],
+          "maxLength": 80
+        },
+        "preferredDate": {
+          "type": "string",
+          "description": "Requested meeting date in YYYY-MM-DD format",
+          "maxLength": 30
+        },
+        "preferredTime": {
+          "type": "string",
+          "description": "Requested meeting time slot (e.g., 11:00 AM AST)",
+          "maxLength": 50
+        },
+        "timezone": {
+          "type": "string",
+          "description": "Customer timezone identifier",
+          "maxLength": 60
+        },
+        "message": {
+          "type": "string",
+          "description": "Optional notes or fleet requirements description",
+          "maxLength": 1500
+        },
+        "status": {
+          "type": "string",
+          "description": "Lifecycle state of the demo request",
+          "enum": [
+            "new",
+            "contacted",
+            "confirmed",
+            "completed",
+            "cancelled",
+            "rejected"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Server timestamp when request was placed"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Server timestamp of most recent state update"
+        },
+        "confirmedAt": {
+          "type": "string",
+          "description": "Timestamp when admin confirmed the meeting"
+        },
+        "confirmedBy": {
+          "type": "string",
+          "description": "Email or ID of the admin who confirmed the meeting",
+          "maxLength": 150
+        },
+        "meetingLink": {
+          "type": "string",
+          "description": "Official video call URL provided by the administrator",
+          "maxLength": 500
+        },
+        "adminNotes": {
+          "type": "string",
+          "description": "Internal administrative notes or follow-up summary",
+          "maxLength": 3000
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Admin identifier responsible for the update",
+          "maxLength": 150
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "interestedIn",
+        "preferredDate",
+        "preferredTime",
+        "status"
+      ]
+    },
+    "MailMessage": {
+      "title": "MailMessage",
+      "description": "Email document dispatched via Firebase Trigger Email extension.",
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "format": "email",
+          "description": "Recipient email address",
+          "maxLength": 200
+        },
+        "message": {
+          "type": "object",
+          "description": "Email content payload containing subject, text, and html",
+          "properties": {
+            "subject": {
+              "type": "string",
+              "maxLength": 250
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 10000
+            },
+            "html": {
+              "type": "string",
+              "maxLength": 30000
+            }
+          },
+          "required": ["subject", "html"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when email was queued"
+        },
+        "demoRequestId": {
+          "type": "string",
+          "description": "Associated demo request ID for correlation",
+          "maxLength": 32
+        }
+      },
+      "required": ["to", "message"]
+    }
+  },
+  "firestore": {
+    "/demoRequests/{requestId}": {
+      "schema": "DemoRequest",
+      "description": "Stores inbound platform demo bookings and client inquiries."
+    },
+    "/mail/{mailId}": {
+      "schema": "MailMessage",
+      "description": "Outbox collection triggering the Firebase Email extension."
+    }
+  }
+}

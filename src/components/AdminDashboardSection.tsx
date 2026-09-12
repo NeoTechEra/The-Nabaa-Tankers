@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Shield, 
   BarChart3, 
@@ -12,19 +12,34 @@ import {
   Clock, 
   TrendingUp, 
   Map, 
-  Mail 
+  Mail,
+  Calendar
 } from 'lucide-react';
 import { SAMPLE_ADMIN_STATS, SAMPLE_ADMIN_ORDERS } from '../data/mockData';
 import { useLanguage } from '../context/LanguageContext';
+import { AdminDemoRequestsManager } from './AdminDemoRequestsManager';
 
 export const AdminDashboardSection: React.FC = () => {
-  const [activeAdminTab, setActiveAdminTab] = useState<'orders' | 'drivers' | 'tankers' | 'promotions' | 'commission' | 'analytics'>('orders');
+  const [activeAdminTab, setActiveAdminTab] = useState<'orders' | 'drivers' | 'tankers' | 'promotions' | 'commission' | 'analytics' | 'demo_requests'>('orders');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [orderFilter, setOrderFilter] = useState<'all' | 'Immediate' | 'Scheduled'>('all');
   const [commissionType, setCommissionType] = useState<'fixed' | 'percentage'>('fixed');
   const [commissionFixedValue] = useState<number>(35);
   const [commissionPercentageValue] = useState<number>(15);
   const { t, isRTL, language } = useLanguage();
+
+  // Support direct deep link via hash (#admin-demo-requests)
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#admin-demo-requests' || hash === '#demo-requests') {
+        setActiveAdminTab('demo_requests');
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
 
   const filteredOrders = SAMPLE_ADMIN_ORDERS.filter((order) => {
     const matchesFilter = orderFilter === 'all' || order.type === orderFilter;
@@ -158,6 +173,7 @@ export const AdminDashboardSection: React.FC = () => {
           <div className="px-6 py-3 border-b border-slate-800 bg-[#081326] flex flex-wrap gap-2">
             {[
               { id: 'orders', label: language === 'ar' ? 'مركز إدارة الطلبات' : '17. Live Order Center', icon: Activity },
+              { id: 'demo_requests', label: language === 'ar' ? 'طلبات العروض التوضيحية (Firestore)' : 'Demo Requests (Live)', icon: Calendar },
               { id: 'drivers', label: language === 'ar' ? 'إدارة السائقين' : '18. Driver Management', icon: Users },
               { id: 'tankers', label: language === 'ar' ? 'أسطول الصهاريج' : '19. Tanker Fleet', icon: Truck },
               { id: 'promotions', label: language === 'ar' ? 'العروض وأكواد الخصم' : '20-21. Promotions & Codes', icon: Tag },
@@ -182,6 +198,13 @@ export const AdminDashboardSection: React.FC = () => {
               );
             })}
           </div>
+
+          {/* TAB: Demo Requests Firestore Manager */}
+          {activeAdminTab === 'demo_requests' && (
+            <div className="p-6 space-y-6 animate-in fade-in duration-200">
+              <AdminDemoRequestsManager />
+            </div>
+          )}
 
           {/* TAB: Live Order Command Center */}
           {activeAdminTab === 'orders' && (

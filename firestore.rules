@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Deny-All Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Security Primitives
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'thenabaatankers@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Demo Request Validation Helpers
+    function isValidDemoRequestCreate(data) {
+      return data.keys().hasAll([
+        'id', 'name', 'email', 'phone', 'interestedIn', 
+        'preferredDate', 'preferredTime', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.id is string && data.id.size() >= 8 && data.id.size() <= 32 &&
+      data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+      data.email is string && data.email.size() >= 5 && data.email.size() <= 150 &&
+      data.phone is string && data.phone.size() >= 6 && data.phone.size() <= 30 &&
+      data.interestedIn is string && data.interestedIn.size() <= 80 &&
+      data.preferredDate is string && data.preferredDate.size() <= 30 &&
+      data.preferredTime is string && data.preferredTime.size() <= 50 &&
+      data.status == 'new' &&
+      (!('companyName' in data) || (data.companyName is string && data.companyName.size() <= 150)) &&
+      (!('country' in data) || (data.country is string && data.country.size() <= 100)) &&
+      (!('timezone' in data) || (data.timezone is string && data.timezone.size() <= 60)) &&
+      (!('message' in data) || (data.message is string && data.message.size() <= 1500));
+    }
+
+    function isValidDemoRequestUpdate(data) {
+      return data.status in ['new', 'contacted', 'confirmed', 'completed', 'cancelled', 'rejected'] &&
+      (!('meetingLink' in data) || (data.meetingLink is string && data.meetingLink.size() <= 500)) &&
+      (!('adminNotes' in data) || (data.adminNotes is string && data.adminNotes.size() <= 3000)) &&
+      (!('confirmedBy' in data) || (data.confirmedBy is string && data.confirmedBy.size() <= 150)) &&
+      (!('updatedBy' in data) || (data.updatedBy is string && data.updatedBy.size() <= 150));
+    }
+
+    // Inbound Demo Requests Collection
+    match /demoRequests/{requestId} {
+      // Public visitors can submit a new demo request with strict structural verification
+      allow create: if isValidId(requestId) &&
+                       incoming().id == requestId &&
+                       isValidDemoRequestCreate(incoming());
+
+      // Only verified administrators can view and query demo requests
+      allow get, list: if isAdmin();
+
+      // Only administrators can update status, assign meeting link, or update admin notes
+      allow update: if isAdmin() &&
+                       isValidDemoRequestUpdate(incoming()) &&
+                       incoming().id == existing().id &&
+                       incoming().createdAt == existing().createdAt;
+
+      // Only administrators can remove records
+      allow delete: if isAdmin();
+    }
+
+    // Outbound Mail Collection (Firebase Trigger Email Extension)
+    match /mail/{mailId} {
+      // Allow creation if strictly directed to business inbox or by authorized admin/correlated booking
+      allow create: if isValidId(mailId) &&
+                       incoming().to is string && incoming().to.size() <= 200 &&
+                       incoming().message is map &&
+                       incoming().message.subject is string && incoming().message.subject.size() <= 250 &&
+                       incoming().message.html is string && incoming().message.html.size() <= 30000 &&
+                       (
+                         incoming().to == 'thenabaatankers@gmail.com' ||
+                         isAdmin() ||
+                         ('demoRequestId' in incoming() && incoming().demoRequestId is string)
+                       );
+
+      // Only administrators can read email queue status and execution logs
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Admins Collection
+    match /admins/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+  }
+}
