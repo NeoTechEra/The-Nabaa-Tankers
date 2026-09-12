@@ -7,10 +7,9 @@ import { useLanguage } from '../context/LanguageContext';
 interface NavbarProps {
   onOpenOrderModal: () => void;
   onOpenDemoModal?: () => void;
-  onExploreClick?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModal, onExploreClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModal }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t, isRTL, language } = useLanguage();
 
@@ -18,14 +17,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
   const phoneTel = '+966530434010';
   const whatsappDisplay = '+92 333 0717198';
   const whatsappLink = 'https://wa.me/923330717198?text=Hello%20The%20Nabaa%20Tankers,%20I%20would%20like%20to%20inquire%20about%20water%20delivery%20and%20services.';
-
-  const handleExplore = () => {
-    if (onExploreClick) {
-      onExploreClick();
-    } else {
-      document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith('#')) {
@@ -54,8 +45,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#060c18]/90 border-b border-cyan-500/15 transition-all">
       {/* Top Direct Contact Strip */}
-      <div className="bg-[#030814] border-b border-slate-800/80 text-[11px] text-slate-300 py-1.5 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-[#030814] border-b border-slate-800/80 text-[11px] text-slate-300 py-1.5 px-4 sm:px-8 lg:px-12">
+        <div className="w-full max-w-[1720px] mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span className="font-mono text-cyan-400 font-semibold">{t.topStrip.operations}</span>
@@ -92,13 +83,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between h-18 sm:h-20">
           {/* Brand Logo */}
           <a 
             href="#home" 
             onClick={(e) => handleLinkClick(e, '#home')}
-            className="flex items-center gap-3 group" 
+            className="flex items-center gap-3 group shrink-0" 
             id="navbar-brand-link"
           >
             <div className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 p-[1px] shadow-lg shadow-cyan-500/20">
@@ -124,13 +115,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-1 xl:gap-2">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2.5 2xl:gap-4">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 onClick={(e) => handleLinkClick(e, link.href)}
-                className="px-2.5 py-1.5 text-sm text-slate-300 hover:text-cyan-300 hover:bg-slate-800/50 rounded-lg transition-colors font-medium cursor-pointer"
+                className="px-3 py-1.5 text-sm text-slate-300 hover:text-cyan-300 hover:bg-slate-800/50 rounded-lg transition-colors font-medium cursor-pointer"
               >
                 {link.name}
               </a>
@@ -138,20 +129,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
           </nav>
 
           {/* Action CTAs + Language Switcher */}
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2.5 shrink-0">
             {/* Highly Visible Language Switcher: EN | العربية */}
             <LanguageSwitcher />
 
             <button
-              onClick={handleExplore}
-              className="px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-lg border border-slate-700/60 transition-colors cursor-pointer"
-              id="nav-explore-btn"
-            >
-              {t.nav.explore}
-            </button>
-            <button
               onClick={onOpenDemoModal}
-              className="px-3 py-2 text-xs font-semibold text-cyan-300 hover:text-white bg-cyan-500/10 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-cyan-500/10"
+              className="px-3.5 py-2 text-xs font-semibold text-cyan-300 hover:text-white bg-cyan-500/10 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shadow-sm shadow-cyan-500/10"
               id="nav-book-demo-btn"
               title={t.nav.bookDemo}
             >
@@ -231,15 +215,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
               className="w-full py-3 text-center text-sm font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg shadow-md shadow-cyan-500/20 cursor-pointer"
             >
               {t.nav.orderNow}
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                handleExplore();
-              }}
-              className="w-full py-2.5 text-center text-xs font-semibold text-slate-300 bg-slate-800/80 rounded-lg border border-slate-700 cursor-pointer"
-            >
-              {t.nav.explore}
             </button>
 
             {/* Direct Mobile Contact Buttons */}

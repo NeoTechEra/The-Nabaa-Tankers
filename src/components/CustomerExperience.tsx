@@ -105,7 +105,7 @@ export const CustomerExperience: React.FC<CustomerExperienceProps> = ({ onSelect
 
         {/* Step 1: Mobile Number & OTP Verification */}
         {activeStep === 1 && (
-          <div className="max-w-3xl mx-auto bg-gradient-to-b from-[#09152b] to-[#070e1c] border border-cyan-500/25 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl animate-in fade-in duration-300">
+          <div className="max-w-5xl mx-auto bg-gradient-to-b from-[#09152b] to-[#070e1c] border border-cyan-500/25 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl animate-in fade-in duration-300">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
                 1
@@ -200,7 +200,7 @@ export const CustomerExperience: React.FC<CustomerExperienceProps> = ({ onSelect
 
         {/* Step 2: Select Delivery Address & Tank Specs */}
         {activeStep === 2 && (
-          <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#09152b] to-[#070e1c] border border-cyan-500/25 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl animate-in fade-in duration-300">
+          <div className="max-w-5xl mx-auto bg-gradient-to-b from-[#09152b] to-[#070e1c] border border-cyan-500/25 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl animate-in fade-in duration-300">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
                 2
