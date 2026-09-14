@@ -1,13 +1,14 @@
 import React from 'react';
-import { Droplets, Shield, MapPin, ArrowUp, ChevronRight, Phone, MessageCircle } from 'lucide-react';
+import { Droplets, Shield, MapPin, ArrowUp, ChevronRight, Phone, MessageCircle, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface FooterProps {
   onOpenOrderModal?: (tankerId?: string) => void;
   onOpenDemoModal?: () => void;
+  onOpenAdminPortal?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModal }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModal, onOpenAdminPortal }) => {
   const { t, isRTL, language } = useLanguage();
 
   const phoneDisplay = '+966 53 043 4010';
@@ -343,6 +344,32 @@ export const Footer: React.FC<FooterProps> = ({ onOpenOrderModal, onOpenDemoModa
             <ArrowUp className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Dedicated Under Footer Area for Admin Access */}
+        {onOpenAdminPortal && (
+          <div className="mt-4 pt-3 border-t border-slate-900/90 flex items-center justify-between flex-wrap gap-2 text-[11px] text-slate-600">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-slate-600">
+                {language === 'ar' ? 'نظام صهاريج نبع المؤسسي v2.4' : 'The Nabaa Enterprise Platform v2.4'}
+              </span>
+              <span className="text-slate-800">•</span>
+              <span className="text-emerald-500/80 font-mono flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                {language === 'ar' ? 'الخوادم متصلة' : 'Systems Operational'}
+              </span>
+            </div>
+
+            <button
+              onClick={onOpenAdminPortal}
+              className="text-slate-500 hover:text-cyan-400 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 hover:border-cyan-500/40 transition-all cursor-pointer font-mono text-[11px] group"
+              id="under-footer-admin-btn"
+              title={language === 'ar' ? 'بوابة إدارة طلبات العروض الحية المشفرة' : 'Encrypted Admin Portal for Live Demo Requests'}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-400 transition-colors" />
+              <span>{language === 'ar' ? 'بوابة المشرف (Admin)' : 'Admin Portal'}</span>
+            </button>
+          </div>
+        )}
 
       </div>
     </footer>

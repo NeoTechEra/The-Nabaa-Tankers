@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { PlatformOverview } from './components/PlatformOverview';
@@ -21,11 +21,26 @@ import { Footer } from './components/Footer';
 import { OrderModal } from './components/OrderModal';
 import { BookDemoModal } from './components/BookDemoModal';
 import { FloatingContactWidget } from './components/FloatingContactWidget';
+import { AdminPortal } from './components/AdminPortal';
 
 export default function App() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState<boolean>(false);
+  const [isAdminPortalOpen, setIsAdminPortalOpen] = useState<boolean>(false);
   const [preselectedTanker, setPreselectedTanker] = useState<string>('tanker-19t');
+
+  // Support direct deep link via hash (#admin, #admin-portal, #demo-requests)
+  useEffect(() => {
+    const checkHash = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#admin' || hash === '#admin-portal' || hash === '#admin-demo-requests' || hash === '#demo-requests') {
+        setIsAdminPortalOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
 
   const handleOpenOrderModal = (tankerId?: string) => {
     if (tankerId) {
@@ -118,6 +133,7 @@ export default function App() {
       <Footer 
         onOpenOrderModal={handleOpenOrderModal} 
         onOpenDemoModal={handleOpenDemoModal}
+        onOpenAdminPortal={() => setIsAdminPortalOpen(true)}
       />
 
       {/* Interactive Universal Tanker Order Simulator Modal */}
@@ -135,6 +151,12 @@ export default function App() {
 
       {/* Persistent Floating Quick WhatsApp & Call Hotline Widget */}
       <FloatingContactWidget />
+
+      {/* Restricted Corporate Admin Portal (Protected Live Demo Requests 16) */}
+      <AdminPortal
+        isOpen={isAdminPortalOpen}
+        onClose={() => setIsAdminPortalOpen(false)}
+      />
 
     </div>
   );

@@ -8,7 +8,10 @@ interface NavbarProps {
   onOpenDemoModal?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModal }) => {
+export const Navbar: React.FC<NavbarProps> = ({ 
+  onOpenOrderModal, 
+  onOpenDemoModal
+}) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t, isRTL, language } = useLanguage();
 
@@ -35,7 +38,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenOrderModal, onOpenDemoModa
     { name: t.nav.howItWorks, href: '#how-it-works' },
     { name: t.nav.customer, href: '#customer-app' },
     { name: t.nav.driver, href: '#driver-app' },
-    { name: t.nav.admin, href: '#admin-dashboard' },
     { name: t.nav.tankers, href: '#tankers' },
     { name: t.nav.features, href: '#features' },
     { name: t.nav.about, href: '#about' }
