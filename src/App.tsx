@@ -1,29 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from './context/RouterContext';
 import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { PlatformOverview } from './components/PlatformOverview';
-import { CustomerExperience } from './components/CustomerExperience';
-import { OrderNowFlow } from './components/OrderNowFlow';
-import { ScheduledDelivery } from './components/ScheduledDelivery';
-import { PromotionsSection } from './components/PromotionsSection';
-import { PaymentsSection } from './components/PaymentsSection';
-import { LiveTrackingSection } from './components/LiveTrackingSection';
-import { CustomerAccountMockup } from './components/CustomerAccountMockup';
-import { DriverAppSection } from './components/DriverAppSection';
-import { AdminDashboardSection } from './components/AdminDashboardSection';
-import { DeliveryWorkflow } from './components/DeliveryWorkflow';
-import { TankerSpecsSection } from './components/TankerSpecsSection';
-import { WhyNabaa } from './components/WhyNabaa';
-import { BusinessAndCustomerCTA } from './components/BusinessAndCustomerCTA';
-import { AboutSection } from './components/AboutSection';
-import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { OrderModal } from './components/OrderModal';
 import { BookDemoModal } from './components/BookDemoModal';
-import { FloatingContactWidget } from './components/FloatingContactWidget';
 import { AdminPortal } from './components/AdminPortal';
+import { FloatingContactWidget } from './components/FloatingContactWidget';
+
+// Dedicated multi-page route components
+import { HomePage } from './pages/HomePage';
+import { HowItWorksPage } from './pages/HowItWorksPage';
+import { CustomerAppPage } from './pages/CustomerAppPage';
+import { DriverAppPage } from './pages/DriverAppPage';
+import { TankerPage } from './pages/TankerPage';
+import { AboutUsPage } from './pages/AboutUsPage';
+import { ServiceAreasPage } from './pages/ServiceAreasPage';
+import { DownloadAppPage } from './pages/DownloadAppPage';
+import { JoinDriverPage } from './pages/JoinDriverPage';
+import { FAQsPage } from './pages/FAQsPage';
+import { ContactPage } from './pages/ContactPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { TermsPage } from './pages/TermsPage';
 
 export default function App() {
+  const { basePath } = useRouter();
+  
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState<boolean>(false);
   const [isAdminPortalOpen, setIsAdminPortalOpen] = useState<boolean>(false);
@@ -61,75 +62,56 @@ export default function App() {
     setIsDemoModalOpen(false);
   };
 
+  // Resolve current active page according to clean multi-page URL architecture
+  const renderActivePage = () => {
+    switch (basePath) {
+      case '/':
+        return <HomePage onOpenOrderModal={handleOpenOrderModal} />;
+      case '/how-it-works':
+        return <HowItWorksPage onOpenOrderModal={handleOpenOrderModal} />;
+      case '/how-it-works/customer':
+        return <CustomerAppPage onOpenOrderModal={handleOpenOrderModal} />;
+      case '/how-it-works/driver':
+        return <DriverAppPage />;
+      case '/how-it-works/tanker':
+        return <TankerPage onOpenOrderModal={handleOpenOrderModal} />;
+      case '/about-us':
+        return <AboutUsPage />;
+      case '/service-areas':
+        return <ServiceAreasPage onOpenOrderModal={handleOpenOrderModal} />;
+      case '/download-app':
+        return <DownloadAppPage />;
+      case '/join-as-driver':
+        return <JoinDriverPage />;
+      case '/faqs':
+        return <FAQsPage />;
+      case '/contact':
+        return <ContactPage />;
+      case '/privacy-policy':
+        return <PrivacyPolicyPage />;
+      case '/terms-and-conditions':
+        return <TermsPage />;
+      default:
+        // Handle routes with trailing slash or fallback to HomePage
+        return <HomePage onOpenOrderModal={handleOpenOrderModal} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#050b16] text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950">
+    <div className="min-h-screen bg-[#050b16] text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 flex flex-col justify-between">
       
-      {/* 1. Global Navigation Bar */}
+      {/* 1. Global Navigation Bar (Public Customer & Driver Links Only) */}
       <Navbar 
         onOpenOrderModal={() => handleOpenOrderModal()} 
         onOpenDemoModal={handleOpenDemoModal}
       />
 
-      <main>
-        {/* 2. Hero Section with Tanker & Telemetry Visual */}
-        <Hero 
-          onOpenOrderModal={() => handleOpenOrderModal()} 
-          onOpenDemoModal={handleOpenDemoModal}
-        />
-
-        {/* 3. Platform Overview: 3-Column System Architecture */}
-        <PlatformOverview />
-
-        {/* 4. Customer Experience: 3-Step Journey */}
-        <CustomerExperience onSelectTanker={(tankerId) => handleOpenOrderModal(tankerId)} />
-
-        {/* 5. Order Now Immediate Dispatch Flow with Radar */}
-        <OrderNowFlow onStartOrder={() => handleOpenOrderModal('tanker-19t')} />
-
-        {/* 6. Scheduled Delivery Calendar & Auto-Refill Booking */}
-        <ScheduledDelivery onScheduleOrder={() => handleOpenOrderModal('tanker-19t')} />
-
-        {/* 7. Promotions & Promo Code Engine */}
-        <PromotionsSection />
-
-        {/* 8. Payments Section (Mada, Apple Pay, Cards, Cash) */}
-        <PaymentsSection />
-
-        {/* 9. Live Driver Telemetry, Route Map, and Milestones */}
-        <LiveTrackingSection />
-
-        {/* 10. Complete Customer Account Management Mockup */}
-        <CustomerAccountMockup />
-
-        {/* 11, 12, 13. Driver & Fleet Mobile App, Wallet & Trip History */}
-        <DriverAppSection />
-
-        {/* 14 through 23. Central Admin Dashboard & Command Center */}
-        <AdminDashboardSection />
-
-        {/* 24. End-to-End Delivery Workflow */}
-        <DeliveryWorkflow />
-
-        {/* 25. Tanker Specifications (10T, 19T, 32T) */}
-        <TankerSpecsSection onOrderTanker={(id) => handleOpenOrderModal(id)} />
-
-        {/* 26. Why The Nabaa */}
-        <WhyNabaa />
-
-        {/* 27 & 28. CTAs for Customers and Fleet Operators */}
-        <BusinessAndCustomerCTA 
-          onOpenOrderModal={() => handleOpenOrderModal()} 
-          onOpenDemoModal={handleOpenDemoModal}
-        />
-
-        {/* 29. About The Nabaa Story & Vision */}
-        <AboutSection />
-
-        {/* 30. Comprehensive FAQ */}
-        <FAQSection />
+      {/* 2. Active Multi-Page Content */}
+      <main className="flex-1">
+        {renderActivePage()}
       </main>
 
-      {/* 31. Footer */}
+      {/* 3. Global Footer with Under-Footer Discrete Admin Access */}
       <Footer 
         onOpenOrderModal={handleOpenOrderModal} 
         onOpenDemoModal={handleOpenDemoModal}
@@ -143,20 +125,20 @@ export default function App() {
         preselectedTankerId={preselectedTanker}
       />
 
-      {/* Interactive Platform Demo & Meeting Booking Modal */}
+      {/* Live System Demonstration Booking Modal */}
       <BookDemoModal
         isOpen={isDemoModalOpen}
         onClose={handleCloseDemoModal}
       />
 
-      {/* Persistent Floating Quick WhatsApp & Call Hotline Widget */}
-      <FloatingContactWidget />
-
-      {/* Restricted Corporate Admin Portal (Protected Live Demo Requests 16) */}
+      {/* Encrypted Operations Admin Portal (Protected with password H78900123osA@) */}
       <AdminPortal
         isOpen={isAdminPortalOpen}
         onClose={() => setIsAdminPortalOpen(false)}
       />
+
+      {/* Direct WhatsApp and Call Floating Quick Widget */}
+      <FloatingContactWidget />
 
     </div>
   );

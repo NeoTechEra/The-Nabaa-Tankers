@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useRouter } from '../context/RouterContext';
 import { Globe } from 'lucide-react';
 
 interface LanguageSwitcherProps {
@@ -9,6 +10,12 @@ interface LanguageSwitcherProps {
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = '', compact = false }) => {
   const { language, setLanguage } = useLanguage();
+  const { switchLanguage } = useRouter();
+
+  const handleSwitch = (target: 'en' | 'ar') => {
+    setLanguage(target);
+    switchLanguage(target);
+  };
 
   return (
     <div 
@@ -23,7 +30,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
 
       <button
         type="button"
-        onClick={() => setLanguage('en')}
+        onClick={() => handleSwitch('en')}
         className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
           language === 'en'
             ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-sm shadow-cyan-500/30'
@@ -40,7 +47,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
 
       <button
         type="button"
-        onClick={() => setLanguage('ar')}
+        onClick={() => handleSwitch('ar')}
         className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer font-sans ${
           language === 'ar'
             ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-sm shadow-cyan-500/30'

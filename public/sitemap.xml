@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Home -->
+  <url>
+    <loc>https://thenabaatankers.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thenabaatankers.com/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thenabaatankers.com/"/>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- How It Works Overview -->
+  <url>
+    <loc>https://thenabaatankers.com/how-it-works</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/how-it-works"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/how-it-works"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/how-it-works</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/how-it-works"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/how-it-works"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- How It Works: Customer -->
+  <url>
+    <loc>https://thenabaatankers.com/how-it-works/customer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/how-it-works/customer"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/how-it-works/customer"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/how-it-works/customer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/how-it-works/customer"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/how-it-works/customer"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- How It Works: Driver -->
+  <url>
+    <loc>https://thenabaatankers.com/how-it-works/driver</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/how-it-works/driver"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/how-it-works/driver"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/how-it-works/driver</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/how-it-works/driver"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/how-it-works/driver"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- How It Works: Tanker -->
+  <url>
+    <loc>https://thenabaatankers.com/how-it-works/tanker</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/how-it-works/tanker"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/how-it-works/tanker"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/how-it-works/tanker</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/how-it-works/tanker"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/how-it-works/tanker"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- About Us -->
+  <url>
+    <loc>https://thenabaatankers.com/about-us</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/about-us"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/about-us"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/about-us</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/about-us"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/about-us"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Service Areas -->
+  <url>
+    <loc>https://thenabaatankers.com/service-areas</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/service-areas"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/service-areas"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/service-areas</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/service-areas"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/service-areas"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Download App -->
+  <url>
+    <loc>https://thenabaatankers.com/download-app</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/download-app"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/download-app"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/download-app</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/download-app"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/download-app"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Join as Driver -->
+  <url>
+    <loc>https://thenabaatankers.com/join-as-driver</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/join-as-driver"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/join-as-driver"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/join-as-driver</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/join-as-driver"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/join-as-driver"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- FAQs -->
+  <url>
+    <loc>https://thenabaatankers.com/faqs</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/faqs"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/faqs"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/faqs</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/faqs"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/faqs"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contact Us -->
+  <url>
+    <loc>https://thenabaatankers.com/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/contact"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/contact"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://thenabaatankers.com/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/privacy-policy"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/privacy-policy"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Terms and Conditions -->
+  <url>
+    <loc>https://thenabaatankers.com/terms-and-conditions</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/terms-and-conditions"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/terms-and-conditions"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://thenabaatankers.com/ar/terms-and-conditions</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://thenabaatankers.com/terms-and-conditions"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://thenabaatankers.com/ar/terms-and-conditions"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+</urlset>
