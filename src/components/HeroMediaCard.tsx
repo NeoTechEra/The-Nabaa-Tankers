@@ -232,28 +232,29 @@ export const HeroMediaCard: React.FC<HeroMediaCardProps> = ({
                   title={language === 'ar' ? videoConfig.titleAr : videoConfig.titleEn}
                   className="w-full h-full border-0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
                 />
                 
                 {/* Floating Quick Action overlay (top right) */}
-                <div className="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   <button
                     type="button"
                     onClick={() => {
                       setQuickUrl(videoConfig.videoUrl);
                       setIsQuickEditOpen(true);
                     }}
-                    className="p-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-900 border border-cyan-500/30 text-cyan-300 hover:text-white text-[11px] font-medium backdrop-blur-md transition-colors flex items-center gap-1 cursor-pointer shadow-md"
+                    className="p-1.5 rounded-lg bg-slate-950/85 hover:bg-slate-900 border border-cyan-500/40 text-cyan-300 hover:text-white text-[11px] font-medium backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer shadow-lg shadow-black/50"
                     title={language === 'ar' ? 'تعديل رابط الفيديو' : 'Edit Video Link'}
                   >
-                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                     <span className="text-[10px] hidden sm:inline">{language === 'ar' ? 'تعديل الرابط' : 'Edit Link'}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setIsFullscreenModalOpen(true)}
-                    className="p-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-900 border border-slate-700 text-slate-300 hover:text-white backdrop-blur-md transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg bg-slate-950/85 hover:bg-slate-900 border border-slate-700 text-slate-300 hover:text-white backdrop-blur-md transition-colors cursor-pointer shadow-lg shadow-black/50"
                     title={language === 'ar' ? 'عرض ملء الشاشة' : 'Fullscreen'}
                   >
                     <Maximize2 className="w-3.5 h-3.5" />
@@ -666,6 +667,7 @@ export const HeroMediaCard: React.FC<HeroMediaCardProps> = ({
                 title="Fullscreen Video"
                 className="w-full h-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
             ) : (

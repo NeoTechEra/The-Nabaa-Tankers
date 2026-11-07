@@ -27,8 +27,8 @@ const FIRESTORE_DOC_ID = 'heroVideo';
 
 // Universal default configuration (uses a reliable, working video that never crashes on Vercel)
 export const DEFAULT_HERO_VIDEO_CONFIG: HeroVideoConfig = {
-  // Reliable water & logistics animation video embed on YouTube (can be overridden anytime from Admin or directly on the card)
-  videoUrl: 'https://www.youtube.com/watch?v=0hO1pXp87nU',
+  // Reliable fleet logistics & dispatch motion graphic animation video on YouTube
+  videoUrl: 'https://www.youtube.com/watch?v=Rt1Ahwj3XsA',
   sourceType: 'youtube',
   posterUrl: '',
   titleAr: 'أنيميشن رحلة صهريج نبع لتوريد المياه',
@@ -87,15 +87,15 @@ export const getYouTubeEmbedUrl = (url: string, autoPlay = true, loop = true, mu
     const params = new URLSearchParams({
       autoplay: autoPlay ? '1' : '0',
       mute: muted ? '1' : '0',
-      loop: loop ? '1' : '0',
-      playlist: videoId, // Required by YouTube iframe player API to loop single videos
       controls: '1',
-      rel: '0',
-      modestbranding: '1',
       playsinline: '1',
-      enablejsapi: '1',
+      rel: '0',
     });
-    return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+    if (loop) {
+      params.set('loop', '1');
+      params.set('playlist', videoId);
+    }
+    return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
   }
   return url;
 };

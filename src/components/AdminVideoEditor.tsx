@@ -142,7 +142,7 @@ export const AdminVideoEditor: React.FC = () => {
   // Preset loaders for convenience
   const applyPreset = (type: 'default_youtube' | 'youtube_demo' | 'sample_mp4') => {
     if (type === 'default_youtube') {
-      setVideoUrl('https://www.youtube.com/watch?v=0hO1pXp87nU');
+      setVideoUrl('https://www.youtube.com/watch?v=Rt1Ahwj3XsA');
       setSourceType('youtube');
     } else if (type === 'youtube_demo') {
       setVideoUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
