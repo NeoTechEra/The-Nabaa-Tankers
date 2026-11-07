@@ -15,7 +15,9 @@ import {
   Eye,
   Sliders,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { 
@@ -26,14 +28,19 @@ import {
   VideoSourceType,
   detectVideoType,
   getYouTubeEmbedUrl,
-  getVimeoEmbedUrl
+  getVimeoEmbedUrl,
+  isYouTubeUrl,
+  subscribeHeroVideoConfig,
+  DEFAULT_HERO_VIDEO_CONFIG
 } from '../services/heroVideoStore';
 
 export const AdminVideoEditor: React.FC = () => {
   const { language, isRTL } = useLanguage();
   
   const [config, setConfig] = useState<HeroVideoConfig>(() => getHeroVideoConfig());
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'source' | 'metadata' | 'playback' | 'preview'>('source');
 
   // Form states
@@ -51,6 +58,14 @@ export const AdminVideoEditor: React.FC = () => {
   const [muted, setMuted] = useState<boolean>(config.muted);
   const [showControls, setShowControls] = useState<boolean>(config.showControls);
 
+  // Sync with Firestore in real-time
+  useEffect(() => {
+    const unsubscribe = subscribeHeroVideoConfig((fresh) => {
+      setConfig(fresh);
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Auto-detect source type when URL changes if user is typing
   const handleUrlChange = (newUrl: string) => {
     setVideoUrl(newUrl);
@@ -58,57 +73,77 @@ export const AdminVideoEditor: React.FC = () => {
     setSourceType(detected);
   };
 
-  const handleSave = (e?: React.FormEvent) => {
+  const handleSave = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const updated: HeroVideoConfig = {
-      videoUrl: videoUrl.trim() || '/assets/nabaa-animation.mp4',
-      sourceType,
-      posterUrl: posterUrl.trim(),
-      titleAr: titleAr.trim() || config.titleAr,
-      titleEn: titleEn.trim() || config.titleEn,
-      taglineAr: taglineAr.trim() || config.taglineAr,
-      taglineEn: taglineEn.trim() || config.taglineEn,
-      badgeAr: badgeAr.trim() || config.badgeAr,
-      badgeEn: badgeEn.trim() || config.badgeEn,
-      autoPlay,
-      loop,
-      muted,
-      showControls,
-    };
+    try {
+      setIsSaving(true);
+      setSaveError(null);
 
-    saveHeroVideoConfig(updated);
-    setConfig(updated);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+      const resolvedUrl = videoUrl.trim() || DEFAULT_HERO_VIDEO_CONFIG.videoUrl;
+      const resolvedType = isYouTubeUrl(resolvedUrl) ? 'youtube' : sourceType;
+
+      const updated: HeroVideoConfig = {
+        videoUrl: resolvedUrl,
+        sourceType: resolvedType,
+        posterUrl: posterUrl.trim(),
+        titleAr: titleAr.trim() || config.titleAr,
+        titleEn: titleEn.trim() || config.titleEn,
+        taglineAr: taglineAr.trim() || config.taglineAr,
+        taglineEn: taglineEn.trim() || config.taglineEn,
+        badgeAr: badgeAr.trim() || config.badgeAr,
+        badgeEn: badgeEn.trim() || config.badgeEn,
+        autoPlay,
+        loop,
+        muted,
+        showControls,
+      };
+
+      await saveHeroVideoConfig(updated);
+      setConfig(updated);
+      setSourceType(resolvedType);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3500);
+    } catch (err: any) {
+      setSaveError(err.message || 'Failed to save configuration');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleReset = () => {
-    if (window.confirm(language === 'ar' ? 'هل أنت متأكد من استعادة الإعدادات الافتراضية للفيديو؟' : 'Reset hero video configuration to default?')) {
-      const def = resetHeroVideoConfig();
-      setConfig(def);
-      setVideoUrl(def.videoUrl);
-      setSourceType(def.sourceType);
-      setPosterUrl(def.posterUrl);
-      setTitleAr(def.titleAr);
-      setTitleEn(def.titleEn);
-      setTaglineAr(def.taglineAr);
-      setTaglineEn(def.taglineEn);
-      setBadgeAr(def.badgeAr);
-      setBadgeEn(def.badgeEn);
-      setAutoPlay(def.autoPlay);
-      setLoop(def.loop);
-      setMuted(def.muted);
-      setShowControls(def.showControls);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+  const handleReset = async () => {
+    if (window.confirm(language === 'ar' ? 'هل أنت متأكد من استعادة الإعدادات الافتراضية للفيديو ومزامنتها؟' : 'Reset hero video configuration to default?')) {
+      try {
+        setIsSaving(true);
+        const def = await resetHeroVideoConfig();
+        setConfig(def);
+        setVideoUrl(def.videoUrl);
+        setSourceType(def.sourceType);
+        setPosterUrl(def.posterUrl);
+        setTitleAr(def.titleAr);
+        setTitleEn(def.titleEn);
+        setTaglineAr(def.taglineAr);
+        setTaglineEn(def.taglineEn);
+        setBadgeAr(def.badgeAr);
+        setBadgeEn(def.badgeEn);
+        setAutoPlay(def.autoPlay);
+        setLoop(def.loop);
+        setMuted(def.muted);
+        setShowControls(def.showControls);
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      } catch (err: any) {
+        setSaveError(err.message || 'Failed to reset configuration');
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
   // Preset loaders for convenience
-  const applyPreset = (type: 'local' | 'youtube_demo' | 'sample_mp4') => {
-    if (type === 'local') {
-      setVideoUrl('/assets/nabaa-animation.mp4');
-      setSourceType('local');
+  const applyPreset = (type: 'default_youtube' | 'youtube_demo' | 'sample_mp4') => {
+    if (type === 'default_youtube') {
+      setVideoUrl('https://www.youtube.com/watch?v=0hO1pXp87nU');
+      setSourceType('youtube');
     } else if (type === 'youtube_demo') {
       setVideoUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
       setSourceType('youtube');
@@ -118,8 +153,8 @@ export const AdminVideoEditor: React.FC = () => {
     }
   };
 
-  const isEmbed = sourceType === 'youtube' || sourceType === 'vimeo';
-  const previewEmbedUrl = sourceType === 'youtube'
+  const isEmbed = isYouTubeUrl(videoUrl) || sourceType === 'youtube' || sourceType === 'vimeo';
+  const previewEmbedUrl = (isYouTubeUrl(videoUrl) || sourceType === 'youtube')
     ? getYouTubeEmbedUrl(videoUrl, autoPlay, loop, muted)
     : getVimeoEmbedUrl(videoUrl, autoPlay, loop, muted);
 
@@ -162,22 +197,42 @@ export const AdminVideoEditor: React.FC = () => {
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 shadow-md shadow-cyan-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+            disabled={isSaving}
+            className="px-5 py-2 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 shadow-md shadow-cyan-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-60"
             id="admin-save-hero-video-btn"
           >
-            {saveSuccess ? <Check className="w-4 h-4 text-slate-950" /> : <Save className="w-4 h-4 text-slate-950" />}
-            <span>{saveSuccess ? (language === 'ar' ? 'تم الحفظ والمزامنة!' : 'Saved Live!') : (language === 'ar' ? 'حفظ ونشر التعديل' : 'Save Changes')}</span>
+            {isSaving ? (
+              <Loader2 className="w-4 h-4 text-slate-950 animate-spin" />
+            ) : saveSuccess ? (
+              <Check className="w-4 h-4 text-slate-950" />
+            ) : (
+              <Save className="w-4 h-4 text-slate-950" />
+            )}
+            <span>
+              {isSaving
+                ? (language === 'ar' ? 'جارِ الحفظ...' : 'Saving...')
+                : saveSuccess
+                ? (language === 'ar' ? 'تم الحفظ والمزامنة!' : 'Saved Live!')
+                : (language === 'ar' ? 'حفظ ونشر التعديل' : 'Save Changes')}
+            </span>
           </button>
         </div>
       </div>
+
+      {saveError && (
+        <div className="p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-200 text-xs flex items-center gap-2.5 animate-in fade-in">
+          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+          <span>{saveError}</span>
+        </div>
+      )}
 
       {saveSuccess && (
         <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 text-xs flex items-center gap-2.5 animate-in fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>
             {language === 'ar'
-              ? 'تم تحديث إعدادات الفيديو وحفظها بنجاح. تنعكس التغييرات فوراً في الواجهة الرئيسية!'
-              : 'Hero video settings updated successfully! Changes reflect immediately on the live homepage.'}
+              ? 'تم تحديث إعدادات الفيديو وحفظها سحابياً في Firestore بنجاح. تنعكس التغييرات فوراً في الواجهة الرئيسية على كافة الأجهزة وفي Vercel!'
+              : 'Hero video settings updated and synced to Firestore successfully! Changes reflect immediately on Vercel and all devices.'}
           </span>
         </div>
       )}
@@ -316,10 +371,11 @@ export const AdminVideoEditor: React.FC = () => {
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => applyPreset('local')}
-                    className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-300 border border-slate-700 cursor-pointer"
+                    onClick={() => applyPreset('default_youtube')}
+                    className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-[11px] text-cyan-300 border border-slate-700 cursor-pointer flex items-center gap-1"
                   >
-                    /assets/nabaa-animation.mp4
+                    <Youtube className="w-3 h-3 text-red-400" />
+                    <span>{language === 'ar' ? 'فيديو أنيميشن المياه (YouTube)' : 'Nabaa Water Dispatch Animation'}</span>
                   </button>
                   <button
                     type="button"

@@ -102,5 +102,13 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
+
+    // Public Site Settings (Hero Video config, public display settings)
+    match /siteSettings/{settingId} {
+      // Anyone worldwide (including on Vercel) can read the site settings (like hero video URL)
+      allow read: if true;
+      // Allow saving and updating settings
+      allow write: if isValidId(settingId);
+    }
   }
 }

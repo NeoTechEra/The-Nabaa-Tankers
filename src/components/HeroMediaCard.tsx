@@ -17,7 +17,12 @@ import {
   Navigation,
   MapPin,
   Clock,
-  Film
+  Film,
+  X,
+  Check,
+  Loader2,
+  Edit3,
+  Youtube
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { 
@@ -25,7 +30,12 @@ import {
   HeroVideoConfig, 
   HERO_VIDEO_EVENT, 
   getYouTubeEmbedUrl, 
-  getVimeoEmbedUrl 
+  getVimeoEmbedUrl,
+  isYouTubeUrl,
+  isVimeoUrl,
+  detectVideoType,
+  saveHeroVideoConfig,
+  subscribeHeroVideoConfig
 } from '../services/heroVideoStore';
 
 interface HeroMediaCardProps {
@@ -50,20 +60,42 @@ export const HeroMediaCard: React.FC<HeroMediaCardProps> = ({
   const [videoError, setVideoError] = useState<boolean>(false);
   const [isFullscreenModalOpen, setIsFullscreenModalOpen] = useState<boolean>(false);
 
-  // Subscribe to live video config updates from Admin Panel
+  // Quick In-Place Video URL Editor Modal
+  const [isQuickEditOpen, setIsQuickEditOpen] = useState<boolean>(false);
+  const [quickUrl, setQuickUrl] = useState<string>(videoConfig.videoUrl);
+  const [isSavingQuick, setIsSavingQuick] = useState<boolean>(false);
+  const [quickSaved, setQuickSaved] = useState<boolean>(false);
+  const [quickError, setQuickError] = useState<string | null>(null);
+
+  // Subscribe to live video config updates from Firestore (syncs across Vercel & all devices)
   useEffect(() => {
+    // 1. Subscribe to Firestore real-time updates
+    const unsubscribeFirestore = subscribeHeroVideoConfig((newConfig) => {
+      setVideoConfig(newConfig);
+      setQuickUrl(newConfig.videoUrl);
+      setVideoError(false);
+    });
+
+    // 2. Also listen to local window event for immediate updates in the same tab
     const handleUpdate = (e: Event) => {
       const customEvent = e as CustomEvent<HeroVideoConfig>;
       if (customEvent.detail) {
         setVideoConfig(customEvent.detail);
+        setQuickUrl(customEvent.detail.videoUrl);
         setVideoError(false);
       } else {
-        setVideoConfig(getHeroVideoConfig());
+        const fresh = getHeroVideoConfig();
+        setVideoConfig(fresh);
+        setQuickUrl(fresh.videoUrl);
         setVideoError(false);
       }
     };
     window.addEventListener(HERO_VIDEO_EVENT, handleUpdate);
-    return () => window.removeEventListener(HERO_VIDEO_EVENT, handleUpdate);
+
+    return () => {
+      unsubscribeFirestore();
+      window.removeEventListener(HERO_VIDEO_EVENT, handleUpdate);
+    };
   }, []);
 
   // Update muted state if config changes
@@ -97,10 +129,48 @@ export const HeroMediaCard: React.FC<HeroMediaCardProps> = ({
   };
 
   // Check if video source is YouTube or Vimeo
-  const isEmbed = videoConfig.sourceType === 'youtube' || videoConfig.sourceType === 'vimeo';
-  const embedUrl = videoConfig.sourceType === 'youtube'
+  const isYouTube = isYouTubeUrl(videoConfig.videoUrl) || videoConfig.sourceType === 'youtube';
+  const isVimeo = isVimeoUrl(videoConfig.videoUrl) || videoConfig.sourceType === 'vimeo';
+  const isEmbed = isYouTube || isVimeo;
+  const embedUrl = isYouTube
     ? getYouTubeEmbedUrl(videoConfig.videoUrl, videoConfig.autoPlay, videoConfig.loop, isMuted)
     : getVimeoEmbedUrl(videoConfig.videoUrl, videoConfig.autoPlay, videoConfig.loop, isMuted);
+
+  // Handle Quick Save of Video URL directly to Cloud Firestore & localStorage
+  const handleQuickSave = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!quickUrl.trim()) {
+      setQuickError(language === 'ar' ? 'الرجاء إدخال رابط الفيديو' : 'Please provide a video URL');
+      return;
+    }
+
+    try {
+      setIsSavingQuick(true);
+      setQuickError(null);
+      
+      const detectedType = detectVideoType(quickUrl.trim());
+      const updatedConfig: HeroVideoConfig = {
+        ...videoConfig,
+        videoUrl: quickUrl.trim(),
+        sourceType: detectedType,
+        updatedAt: new Date().toISOString()
+      };
+
+      await saveHeroVideoConfig(updatedConfig);
+      setVideoConfig(updatedConfig);
+      setVideoError(false);
+      setQuickSaved(true);
+
+      setTimeout(() => {
+        setQuickSaved(false);
+        setIsQuickEditOpen(false);
+      }, 1500);
+    } catch (err: any) {
+      setQuickError(err.message || 'Failed to save');
+    } finally {
+      setIsSavingQuick(false);
+    }
+  };
 
   return (
     <div className="relative w-full max-w-[560px] mx-auto rounded-3xl p-4 sm:p-5 bg-gradient-to-b from-slate-900/95 via-[#0a1529]/95 to-[#060e1d] border border-cyan-500/30 shadow-2xl shadow-cyan-950/50 backdrop-blur-xl flex flex-col justify-between gap-4 overflow-hidden">
@@ -155,15 +225,42 @@ export const HeroMediaCard: React.FC<HeroMediaCardProps> = ({
           <div className="relative aspect-[16/10] sm:aspect-video w-full rounded-2xl bg-slate-950 border border-cyan-500/25 overflow-hidden shadow-xl group">
             
             {isEmbed ? (
-              /* Embed (YouTube / Vimeo) */
-              <iframe
-                src={embedUrl}
-                title={language === 'ar' ? videoConfig.titleAr : videoConfig.titleEn}
-                className="w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            ) : !videoError ? (
+              /* Embed (YouTube / Vimeo) - Plays reliably anywhere, including on Vercel */
+              <div className="relative w-full h-full bg-black">
+                <iframe
+                  src={embedUrl}
+                  title={language === 'ar' ? videoConfig.titleAr : videoConfig.titleEn}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+                
+                {/* Floating Quick Action overlay (top right) */}
+                <div className="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuickUrl(videoConfig.videoUrl);
+                      setIsQuickEditOpen(true);
+                    }}
+                    className="p-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-900 border border-cyan-500/30 text-cyan-300 hover:text-white text-[11px] font-medium backdrop-blur-md transition-colors flex items-center gap-1 cursor-pointer shadow-md"
+                    title={language === 'ar' ? 'تعديل رابط الفيديو' : 'Edit Video Link'}
+                  >
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <span className="text-[10px] hidden sm:inline">{language === 'ar' ? 'تعديل الرابط' : 'Edit Link'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsFullscreenModalOpen(true)}
+                    className="p-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-900 border border-slate-700 text-slate-300 hover:text-white backdrop-blur-md transition-colors cursor-pointer"
+                    title={language === 'ar' ? 'عرض ملء الشاشة' : 'Fullscreen'}
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : !videoError && videoConfig.videoUrl ? (
               /* Direct HTML5 Video Player */
               <>
                 <video
@@ -192,14 +289,29 @@ export const HeroMediaCard: React.FC<HeroMediaCardProps> = ({
                         <span>{language === 'ar' ? videoConfig.badgeAr : videoConfig.badgeEn}</span>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => setIsFullscreenModalOpen(true)}
-                        className="p-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-900 border border-slate-700 text-slate-300 hover:text-white pointer-events-auto transition-colors cursor-pointer"
-                        title={language === 'ar' ? 'عرض ملء الشاشة' : 'Fullscreen'}
-                      >
-                        <Maximize2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-1.5 pointer-events-auto">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setQuickUrl(videoConfig.videoUrl);
+                            setIsQuickEditOpen(true);
+                          }}
+                          className="p-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-900 border border-cyan-500/30 text-cyan-300 hover:text-white text-[11px] font-medium backdrop-blur-md transition-colors flex items-center gap-1 cursor-pointer"
+                          title={language === 'ar' ? 'تعديل الرابط' : 'Edit Link'}
+                        >
+                          <Sparkles className="w-3 h-3 text-amber-400" />
+                          <span className="text-[10px] hidden sm:inline">{language === 'ar' ? 'تعديل' : 'Edit'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setIsFullscreenModalOpen(true)}
+                          className="p-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-900 border border-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                          title={language === 'ar' ? 'عرض ملء الشاشة' : 'Fullscreen'}
+                        >
+                          <Maximize2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     {/* Bottom playback buttons */}
@@ -269,16 +381,17 @@ export const HeroMediaCard: React.FC<HeroMediaCardProps> = ({
                     <span>{language === 'ar' ? 'إعادة المحاولة' : 'Retry Playback'}</span>
                   </button>
 
-                  {onOpenAdminPortal && (
-                    <button
-                      type="button"
-                      onClick={() => onOpenAdminPortal('hero_video')}
-                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                      <span>{language === 'ar' ? 'تعديل الرابط' : 'Edit Link'}</span>
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuickUrl(videoConfig.videoUrl);
+                      setIsQuickEditOpen(true);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <span>{language === 'ar' ? 'تعديل الرابط' : 'Edit Link'}</span>
+                  </button>
                 </div>
               </div>
             )}
@@ -392,6 +505,138 @@ export const HeroMediaCard: React.FC<HeroMediaCardProps> = ({
             <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
           </button>
 
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* QUICK IN-PLACE VIDEO LINK EDITOR MODAL                   */}
+      {/* ======================================================== */}
+      {isQuickEditOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
+          onClick={() => setIsQuickEditOpen(false)}
+        >
+          <div 
+            className="relative w-full max-w-lg rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-cyan-500/30 p-5 shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+            dir={isRTL ? 'rtl' : 'ltr'}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                  <Youtube className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white">
+                    {language === 'ar' ? 'تعديل رابط فيديو الأنيميشن' : 'Update Hero Video / Animation'}
+                  </h4>
+                  <p className="text-[11px] text-slate-400">
+                    {language === 'ar' ? 'يتم الحفظ سحابياً في Firestore ويظهر فوراً على Vercel وكافة الأجهزة' : 'Saves to Cloud Firestore and syncs instantly across Vercel & all devices'}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsQuickEditOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Input & Form */}
+            <form onSubmit={handleQuickSave} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-200 mb-1">
+                  {language === 'ar' ? 'رابط الفيديو (YouTube أو مباشر):' : 'Video URL (YouTube or Direct):'}
+                </label>
+                <input
+                  type="text"
+                  value={quickUrl}
+                  onChange={(e) => {
+                    setQuickUrl(e.target.value);
+                    setQuickError(null);
+                  }}
+                  placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono"
+                  dir="ltr"
+                  autoFocus
+                />
+              </div>
+
+              {/* Supported Formats Info */}
+              <div className="text-[11px] text-slate-400 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 space-y-1">
+                <div className="text-cyan-400 font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>{language === 'ar' ? 'يدعم كافة صيغ يوتيوب:' : 'Supports all YouTube links:'}</span>
+                </div>
+                <div className="font-mono text-[10px] text-slate-300" dir="ltr">
+                  • youtube.com/watch?v=...<br />
+                  • youtu.be/...<br />
+                  • youtube.com/shorts/...
+                </div>
+              </div>
+
+              {quickError && (
+                <div className="text-xs text-rose-400 bg-rose-950/30 border border-rose-800/50 p-2 rounded-lg">
+                  {quickError}
+                </div>
+              )}
+
+              {quickSaved && (
+                <div className="text-xs text-emerald-300 bg-emerald-950/40 border border-emerald-500/40 p-2 rounded-lg flex items-center gap-1.5 animate-in fade-in">
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span>{language === 'ar' ? 'تم الحفظ والمزامنة السحابية بنجاح!' : 'Saved and synced globally to Firestore!'}</span>
+                </div>
+              )}
+
+              {/* Modal Action Buttons */}
+              <div className="flex items-center justify-between pt-2">
+                {onOpenAdminPortal ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsQuickEditOpen(false);
+                      onOpenAdminPortal('hero_video');
+                    }}
+                    className="text-xs text-slate-400 hover:text-cyan-300 flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>{language === 'ar' ? 'الإعدادات المتقدمة' : 'Advanced Settings'}</span>
+                  </button>
+                ) : <div />}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsQuickEditOpen(false)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer"
+                  >
+                    {language === 'ar' ? 'إلغاء' : 'Cancel'}
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={isSavingQuick}
+                    className="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 transition-all shadow-md shadow-cyan-500/20 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    {isSavingQuick ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>{language === 'ar' ? 'جارِ الحفظ...' : 'Saving...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        <span>{language === 'ar' ? 'حفظ ونشر التعديل' : 'Save & Publish'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
