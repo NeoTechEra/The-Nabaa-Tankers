@@ -17,7 +17,11 @@ import {
 import { SAMPLE_ADMIN_STATS, SAMPLE_ADMIN_ORDERS } from '../data/mockData';
 import { useLanguage } from '../context/LanguageContext';
 
-export const AdminDashboardSection: React.FC = () => {
+interface AdminDashboardSectionProps {
+  embedded?: boolean;
+}
+
+export const AdminDashboardSection: React.FC<AdminDashboardSectionProps> = ({ embedded = false }) => {
   const [activeAdminTab, setActiveAdminTab] = useState<'orders' | 'drivers' | 'tankers' | 'promotions' | 'commission' | 'analytics'>('orders');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [orderFilter, setOrderFilter] = useState<'all' | 'Immediate' | 'Scheduled'>('all');
@@ -34,30 +38,8 @@ export const AdminDashboardSection: React.FC = () => {
     return matchesFilter && matchesSearch;
   });
 
-  return (
-    <section id="admin-dashboard" className="py-24 relative bg-[#050b16] border-t border-slate-800/80 overflow-hidden">
-      
-      {/* Background glow effects */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-600/10 rounded-full blur-[140px] pointer-events-none"></div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold uppercase tracking-wider">
-            <Shield className="w-3.5 h-3.5" />
-            <span>{t.admin.tag}</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight">
-            {t.admin.title}
-          </h2>
-          <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            {t.admin.subtitle}
-          </p>
-        </div>
-
-        {/* Big Desktop Dashboard Shell */}
-        <div className="bg-[#081224] border border-cyan-500/30 rounded-3xl shadow-2xl shadow-cyan-950/50 overflow-hidden backdrop-blur-2xl">
+  const dashboardContent = (
+    <div className="bg-[#081224] border border-cyan-500/30 rounded-3xl shadow-2xl shadow-cyan-950/50 overflow-hidden backdrop-blur-2xl">
           
           {/* Dashboard Top Header Bar */}
           <div className="px-6 py-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4 bg-[#09162c]/80">
@@ -674,7 +656,33 @@ export const AdminDashboardSection: React.FC = () => {
           </div>
 
         </div>
+  );
 
+  if (embedded) {
+    return dashboardContent;
+  }
+
+  return (
+    <section id="admin-dashboard" className="py-24 relative bg-[#050b16] border-t border-slate-800/80 overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold uppercase tracking-wider">
+            <Shield className="w-3.5 h-3.5" />
+            <span>{t.admin.tag}</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display tracking-tight">
+            {t.admin.title}
+          </h2>
+          <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
+            {t.admin.subtitle}
+          </p>
+        </div>
+
+        {dashboardContent}
       </div>
     </section>
   );

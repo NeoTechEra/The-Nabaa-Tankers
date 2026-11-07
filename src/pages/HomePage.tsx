@@ -16,12 +16,14 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { Link } from '../components/Link';
 import { SEOHead } from '../components/SEOHead';
+import { HeroMediaCard } from '../components/HeroMediaCard';
 
 interface HomePageProps {
   onOpenOrderModal: (tankerId?: string) => void;
+  onOpenAdminPortal?: (tab?: any) => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onOpenOrderModal }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onOpenOrderModal, onOpenAdminPortal }) => {
   const { t, isRTL, language } = useLanguage();
 
   return (
@@ -146,56 +148,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onOpenOrderModal }) => {
               </div>
             </div>
 
-            {/* Right / Visual Preview Card */}
-            <div className="lg:col-span-5">
-              <div className="p-6 rounded-3xl bg-[#09152b] border border-cyan-500/30 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
-                    <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                      {language === 'ar' ? 'طلب فوري مباشر' : 'Active Dispatch Radar'}
-                    </span>
-                  </div>
-                  <span className="text-xs font-mono text-cyan-400">Riyadh Hub</span>
-                </div>
-
-                <div className="py-6 space-y-4">
-                  <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800/80 space-y-3">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-slate-400">{language === 'ar' ? 'سعة الصهريج القياسي' : 'Standard Tanker Size'}</span>
-                      <span className="font-mono font-bold text-cyan-300">19 {language === 'ar' ? 'طن' : 'Tons'} (19,000L)</span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-slate-400">{language === 'ar' ? 'جودة المياه' : 'Water Quality'}</span>
-                      <span className="text-emerald-400 font-medium flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        {language === 'ar' ? 'مياه شرب محلاة صالحة للاستهلاك' : 'Certified Potable Drinking'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-slate-400">{language === 'ar' ? 'متوسط وقت الوصول (ETA)' : 'Average ETA'}</span>
-                      <span className="font-mono text-white">25 - 45 {language === 'ar' ? 'دقيقة' : 'mins'}</span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-xs text-slate-300 flex items-center justify-between">
-                    <span>{language === 'ar' ? 'التوصيل متاح الآن لجميع أحياء شمال ووسط الرياض' : 'Immediate dispatch active across Riyadh'}</span>
-                    <span className="font-mono text-cyan-300 font-bold">ONLINE</span>
-                  </div>
-
-                  <button
-                    onClick={() => onOpenOrderModal('tanker-19t')}
-                    className="w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
-                  >
-                    <span>{language === 'ar' ? 'بدء الطلب السريع' : 'Start Instant Order'}</span>
-                    <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
-
-                <div className="pt-3 border-t border-slate-800 text-center text-[11px] text-slate-400 font-mono">
-                  {language === 'ar' ? 'نظام صهاريج نبع الذكي لتوريد المياه' : 'The Nabaa Smart Water Logistics Network'}
-                </div>
-              </div>
+            {/* Right / Dual-Mode Visual Media Card (Video Animation + Live Radar Card) */}
+            <div className="lg:col-span-5 flex justify-center">
+              <HeroMediaCard 
+                onOpenOrderModal={onOpenOrderModal} 
+                onOpenAdminPortal={onOpenAdminPortal} 
+              />
             </div>
           </div>
         </section>

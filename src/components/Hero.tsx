@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, Droplets, Radio, Truck, Calendar, Phone, MessageCircle, MapPin, Navigation, Activity } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { HeroMediaCard } from './HeroMediaCard';
 
 interface HeroProps {
   onOpenOrderModal: () => void;
@@ -152,143 +153,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenOrderModal, onOpenDemoModal, o
             </div>
           </div>
 
-          {/* Right Column: Hero Visual with Connected UI Overlays & Tanker Graphic */}
+          {/* Right Column: Hero Visual with Dual-Mode Toggle (Video Animation + Live Radar Card) */}
           <div className="lg:col-span-6 relative flex items-center justify-center">
-            
-            {/* Animated Ambient Ring / Flow Effect */}
-            <div className="relative w-full max-w-[540px] rounded-3xl p-5 sm:p-6 bg-gradient-to-b from-slate-900/90 via-[#0a1529]/95 to-[#060e1d] border border-cyan-500/20 shadow-2xl shadow-cyan-950/40 overflow-hidden backdrop-blur-xl flex flex-col justify-between gap-4">
-              
-              {/* Animated water waves visual */}
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#06b6d4_1px,transparent_1px)] [background-size:16px_16px]"></div>
-              <div className="absolute -bottom-10 left-0 right-0 h-40 bg-gradient-to-t from-cyan-500/10 to-transparent pointer-events-none"></div>
-
-              {/* Central Premium Tanker Silhouette / Visual Representation */}
-              <div className="relative flex flex-col justify-between gap-4 z-10">
-                
-                {/* Top Telemetry Bar */}
-                <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                    <span className="text-xs font-mono font-medium text-emerald-400 uppercase">
-                      {isRTL ? 'الأسطول متصل ونشط' : 'Live Fleet Active'}
-                    </span>
-                  </div>
-                  <div className="text-xs font-mono text-slate-400 flex items-center gap-1.5">
-                    <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>{isRTL ? 'تزامن لحظي #NB-9481' : 'Telemetry Sync #NB-9481'}</span>
-                  </div>
-                </div>
-
-                {/* Telemetry Quick Info Strip - Non-overlapping cleanly structured HUD */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {/* Node 1: Driver Assignment & Tanker #402 */}
-                  <div className="bg-[#09152b]/95 border border-cyan-500/30 rounded-xl p-2.5 shadow-md flex items-center gap-2.5 backdrop-blur-md">
-                    <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center shrink-0">
-                      <Truck className="w-4 h-4 text-cyan-300" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-[10px] text-slate-400 uppercase font-medium">
-                        {isRTL ? 'السائق المعين' : 'Assigned Driver'}
-                      </div>
-                      <div className="text-xs font-bold text-cyan-300 truncate">
-                        {isRTL ? 'الكابتن طارق • صهريج #402' : 'Tariq • Tanker #402'}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Node 2: Customer Order */}
-                  <div className="bg-[#09152b]/95 border border-blue-500/30 rounded-xl p-2.5 shadow-md flex items-center gap-2.5 backdrop-blur-md">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-                      <MapPin className="w-4 h-4 text-cyan-400" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-[10px] text-slate-400 uppercase font-medium">
-                        {isRTL ? 'طلب العميل' : 'Customer Order'}
-                      </div>
-                      <div className="text-xs font-bold text-white truncate">
-                        {isRTL ? 'فيلا حي الملقا #14' : 'Al-Malqa Villa #14'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Center: Detailed Vector Tanker Graphic */}
-                <div className="relative py-4 flex items-center justify-center">
-                  <div className="absolute w-56 h-56 rounded-full border border-cyan-500/20 animate-ping opacity-20 pointer-events-none"></div>
-                  <div className="absolute w-72 h-72 rounded-full border border-blue-500/10 pointer-events-none"></div>
-
-                  <div className="relative w-full max-w-sm flex flex-col items-center group">
-                    <div className="relative w-72 sm:w-80 h-36 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-3xl border border-cyan-400/30 p-4 shadow-xl flex items-center justify-between overflow-hidden">
-                      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-cyan-600/40 to-blue-500/10 rounded-b-2xl border-t border-cyan-400/40">
-                        <div className="w-full h-2 bg-cyan-400/30 blur-[2px] animate-pulse"></div>
-                      </div>
-                      
-                      {/* Tanker Branding on barrel */}
-                      <div className="relative z-10 flex flex-col">
-                        <div className="flex items-center gap-1.5 text-cyan-300 font-display font-bold text-sm tracking-wider">
-                          <Droplets className="w-4 h-4 text-cyan-400" />
-                          <span>{language === 'ar' ? 'نَبْع | THE NABAA' : 'THE NABAA'}</span>
-                        </div>
-                        <span className="text-[11px] font-mono text-slate-300">
-                          {language === 'ar' ? 'صهريج مياه نقية صالحة للشرب' : 'POTABLE WATER DISPATCH'}
-                        </span>
-                      </div>
-
-                      <div className="relative z-10 text-right">
-                        <span className="text-xl font-black font-display text-white">19T</span>
-                        <div className="text-[10px] text-cyan-300 font-mono">
-                          {language === 'ar' ? '19,000 لتر' : '19,000 LITERS'}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="w-64 sm:w-72 h-3 bg-slate-900 rounded-sm mt-1 flex justify-between px-4"></div>
-                    <div className="w-68 sm:w-76 flex justify-between px-6 -mt-2">
-                      <div className="w-7 h-7 rounded-full bg-slate-950 border-2 border-slate-700 shadow-inner flex items-center justify-center">
-                        <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
-                      </div>
-                      <div className="w-7 h-7 rounded-full bg-slate-950 border-2 border-slate-700 shadow-inner flex items-center justify-center">
-                        <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
-                      </div>
-                      <div className="w-7 h-7 rounded-full bg-slate-950 border-2 border-slate-700 shadow-inner flex items-center justify-center">
-                        <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Node 3: Live ETA & Status (Bottom) */}
-                <div className="bg-[#0b1b36]/90 border border-slate-700/80 rounded-2xl p-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 flex items-center justify-center shrink-0">
-                      <Navigation className="w-4 h-4 text-cyan-400 animate-pulse" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-slate-400">
-                        {isRTL ? 'حالة التوصيل' : 'Delivery Status'}
-                      </div>
-                      <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-                        {isRTL ? 'السائق في الطريق إلى موقع الخزان' : 'On the Way to Customer'}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={`${isRTL ? 'text-left' : 'text-right'} shrink-0`}>
-                    <div className="text-[11px] text-slate-400">
-                      {isRTL ? 'الوقت المقدر' : 'Estimated Arrival'}
-                    </div>
-                    <div className="text-sm font-extrabold text-cyan-300 font-mono" dir="ltr">
-                      {isRTL ? '6 دقائق (2.4 كم)' : '6 min (2.4 km)'}
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
+            <HeroMediaCard 
+              onOpenOrderModal={onOpenOrderModal} 
+              onOpenAdminPortal={onOpenDemoModal} 
+            />
           </div>
 
         </div>
