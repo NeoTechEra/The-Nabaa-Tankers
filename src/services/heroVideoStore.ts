@@ -90,6 +90,7 @@ export const getYouTubeEmbedUrl = (url: string, autoPlay = true, loop = true, mu
       controls: '1',
       playsinline: '1',
       rel: '0',
+      enablejsapi: '1',
     });
     if (loop) {
       params.set('loop', '1');
@@ -115,6 +116,7 @@ export const getVimeoEmbedUrl = (url: string, autoPlay = true, loop = true, mute
         byline: '0',
         title: '0',
         portrait: '0',
+        api: '1',
       });
       return `https://player.vimeo.com/video/${videoId}?${params.toString()}`;
     }
